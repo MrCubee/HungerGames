@@ -1,0 +1,8 @@
+name: SurvivalGames
+version: 1.0
+author: MrCubee
+main: fr.mrcubee.survivalgames.SurvivalGames
+commands:
+  forcestart:
+  kit:
+  spawn:

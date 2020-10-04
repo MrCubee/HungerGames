@@ -1,0 +1,11 @@
+world:
+  name: world
+  border:
+    max: 2000
+    min: 1
+    time: 2700
+player:
+  max: 100
+  min: 10
+game:
+  pvpTime: 300
