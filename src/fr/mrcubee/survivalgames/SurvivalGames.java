@@ -27,9 +27,9 @@ public class SurvivalGames extends JavaPlugin {
 		File worldFile = new File("./" + this.game.getGameSetting().getWorldName());
 		File netherFile = new File("./" + this.game.getGameSetting().getWorldName() + "_nether");
 		File endFile = new File("./" + this.game.getGameSetting().getWorldName() + "_the_end");
-		FileUtil.remove(worldFile);
-		FileUtil.remove(netherFile);
-		FileUtil.remove(endFile);
+		FileUtil.delete(worldFile);
+		FileUtil.delete(netherFile);
+		FileUtil.delete(endFile);
 	}
 
 	public void onEnable() {
@@ -80,7 +80,7 @@ public class SurvivalGames extends JavaPlugin {
 
 	public void onDisable() {
 		File logsFile = new File("./logs");
-		FileUtil.remove(logsFile);
+		FileUtil.delete(logsFile);
 	}
 
 	public void loadArea(World world) {

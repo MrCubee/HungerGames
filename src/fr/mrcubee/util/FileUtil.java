@@ -4,19 +4,20 @@ import java.io.File;
 
 public class FileUtil {
 
-	public static void remove(File file) {
-		if ((file != null) && file.exists() && file.isFile()) {
+	public static void delete(File file) {
+		File[] files;
+
+		if (file == null || file.exists())
+			return;
+		else if (file.isFile()) {
 			file.delete();
 			return;
 		}
-
-		if (file.listFiles() == null)
+		files = file.listFiles();
+		if (files == null)
 			return;
-		for (File f : file.listFiles()) {
-			if (f.exists())
-				remove(f);
-			if (f.exists())
-				f.delete();
-		}
+		for (File f : files)
+			delete(f);
+		file.delete();
 	}
 }
