@@ -107,9 +107,9 @@ public class SurvivalGames extends JavaPlugin {
 		if (!sender.isOp())
 			return false;
 		if (getGame().getGameStats() == GameStats.WAITING)
-			getGame().forcestart();
+			getGame().forceStart();
 		if (getGame().getGameStats() == GameStats.DURING)
-			getGame().forcepvp();
+			getGame().forcePvp();
 		return true;
 	}
 	

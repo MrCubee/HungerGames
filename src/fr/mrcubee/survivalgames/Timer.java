@@ -2,7 +2,6 @@ package fr.mrcubee.survivalgames;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -71,14 +70,14 @@ public class Timer extends Thread {
             survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.GREEN + "Waiting for players...", -2);
         }
 
-        if (survivalGames.getGame().getNumberPlayer() >= survivalGames.getGame().getGameSetting().getMinPlayer() || survivalGames.getGame().isForcestart()) {
+        if (survivalGames.getGame().getNumberPlayer() >= survivalGames.getGame().getGameSetting().getMinPlayer() || survivalGames.getGame().isForceStart()) {
             time = -1;
             survivalGames.getGame().setGameStats(GameStats.STARTING);
         }
     }
 
     public void starting() {
-        if (survivalGames.getGame().getNumberPlayer() < survivalGames.getGame().getGameSetting().getMinPlayer() && !survivalGames.getGame().isForcestart()) {
+        if (survivalGames.getGame().getNumberPlayer() < survivalGames.getGame().getGameSetting().getMinPlayer() && !survivalGames.getGame().isForceStart()) {
             time = -1;
             survivalGames.getGame().setGameStats(GameStats.WAITING);
             return;
@@ -146,7 +145,7 @@ public class Timer extends Thread {
                 survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.GRAY + "PvP in " + ChatColor.RED + PingServer.getTime(time), -2);
                 survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.BLUE + "Border: " + ChatColor.RED + "+" + border + " -" + border, -3);
 
-                if (survivalGames.getGame().isForcepvp())
+                if (survivalGames.getGame().isForcePvp())
                     time = 0;
 
                 if (time <= 10) {

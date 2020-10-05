@@ -7,42 +7,61 @@ import fr.mrcubee.survivalgames.scoreboardmanager.PluginScoreBoardManager;
 
 import java.util.*;
 
-import org.bukkit.Bukkit;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+/**
+ * This class contains all the elements of the party.
+ * <p>
+ * It can only be instantiated by the plugin. Because it is only useful for him.
+ *
+ * @author MrCubee
+ */
 public class Game {
-    private SurvivalGames survivalGames;
-    private SurvivalGamesAPI survivalGamesAPI;
-    private KitManager kitManager;
+    private final SurvivalGames survivalGames;
+    private final KitManager kitManager;
+    private final GameSetting gameSetting;
     private PluginScoreBoardManager pluginScoreBoardManager;
-    private GameSetting gameSetting;
     private GameStats gameStats;
     private World gameWorld;
     private Location spawn;
-    private boolean forcestart;
-    private boolean forcepvp;
+    private boolean forceStart;
+    private boolean forcePvp;
     private int totalPlayers;
     private boolean pvpEnable;
     private long gameDuration;
     private HashSet<Player> players;
 
+    /**
+     * The constructor makes it possible to instantiate the classes necessary for the party
+     * and to define default values in the variables.
+     * <p>
+     * This constructor is called before the server and services are loaded.
+     * It can only be instantiated by the plugin. Because it is only useful for him.
+     *
+     * @param survivalGames The plugin's main class instance.
+     */
     protected Game(SurvivalGames survivalGames) {
         this.survivalGames = survivalGames;
         this.kitManager = new KitManager(survivalGames);
-        this.survivalGamesAPI = new SurvivalGamesAPI(this);
         this.gameStats = GameStats.OPENING;
         this.gameSetting = new GameSetting();
         this.players = new HashSet<Player>();
-        this.forcestart = false;
+        this.forceStart = false;
         this.pvpEnable = false;
 
         PluginAnnotations.load(survivalGames, gameSetting);
+        SurvivalGamesAPI.setGame(this);
     }
 
+    /**
+     * This method is called after loading the server and services.
+     * It allows you to retrieve the party world, and to prepare the ScoreBoard and the kits manager.
+     */
     protected void init() {
         this.gameWorld = survivalGames.getServer().getWorld(gameSetting.getWorldName());
         this.pluginScoreBoardManager = new PluginScoreBoardManager(
@@ -50,12 +69,15 @@ public class Game {
         this.survivalGames.getCommand("kit").setExecutor(this.kitManager);
     }
 
+    /**
+     * This method allows you to send a message to all players in the standard SurvivalGames format.
+     *
+     * @param message The message to send to the players.
+     */
     public void broadcastMessage(String message) {
-        if ((message == null) || (message.length() < 1)) {
+        if (message == null || message.isEmpty() || StringUtils.isWhitespace(message))
             return;
-        }
-        this.survivalGames.getServer().broadcastMessage(
-                ChatColor.GOLD + "[" + ChatColor.RED + this.survivalGames.getName() + ChatColor.GOLD + "] " + message);
+        this.survivalGames.getServer().broadcastMessage(ChatColor.GOLD + "[" + ChatColor.RED + this.survivalGames.getName() + ChatColor.GOLD + "] " + message);
     }
 
     public KitManager getKitManager() {
@@ -69,16 +91,16 @@ public class Game {
     protected void setGameStats(GameStats newStats) {
         if (newStats == null)
             return;
-        this.survivalGames.getServer().getPluginManager().callEvent(new GameStatsChangeEvent(newStats));
-        this.gameStats = newStats;
+        survivalGames.getServer().getPluginManager().callEvent(new GameStatsChangeEvent(newStats));
+        gameStats = newStats;
     }
 
     public GameStats getGameStats() {
-        return this.gameStats;
+        return gameStats;
     }
 
     public GameSetting getGameSetting() {
-        return this.gameSetting;
+        return gameSetting;
     }
 
     public World getGameWorld() {
@@ -90,7 +112,7 @@ public class Game {
     }
 
     public Location getSpawn() {
-        return this.spawn.clone();
+        return spawn.clone();
     }
 
     protected void setTotalPlayers(int totalPlayers) {
@@ -98,23 +120,23 @@ public class Game {
     }
 
     public int getTotalPlayers() {
-        return this.totalPlayers;
+        return totalPlayers;
     }
 
-    protected void forcestart() {
-        this.forcestart = true;
+    protected void forceStart() {
+        forceStart = true;
     }
 
-    public boolean isForcestart() {
-        return this.forcestart;
+    public boolean isForceStart() {
+        return forceStart;
     }
 
-    public void forcepvp() {
-        this.forcepvp = true;
+    public void forcePvp() {
+        forcePvp = true;
     }
 
-    public boolean isForcepvp() {
-        return this.forcepvp;
+    public boolean isForcePvp() {
+        return forcePvp;
     }
 
     protected void setPvpEnable(boolean pvpEnable) {
@@ -122,7 +144,7 @@ public class Game {
     }
 
     public boolean isPvpEnable() {
-        return this.pvpEnable;
+        return pvpEnable;
     }
 
     protected void setGameDuration(long gameDuration) {
@@ -130,32 +152,32 @@ public class Game {
     }
 
     public long getGameDuration() {
-        return this.gameDuration;
+        return gameDuration;
     }
 
     protected SurvivalGames getSurvivalGames() {
-        return this.survivalGames;
+        return survivalGames;
     }
 
     public Set<Player> getPlayerInGame() {
-        return (Set<Player>) this.players.clone();
+        return (Set<Player>) players.clone();
     }
 
     public int getNumberPlayer() {
-        return this.players.size();
+        return players.size();
     }
 
     public void addPlayer(Player player) {
         if (player == null || !player.isOnline())
             return;
-        this.players.add(player);
+        players.add(player);
         player.setGameMode(GameMode.SURVIVAL);
     }
 
     public void addSpectator(Player player) {
         if (player == null)
             return;
-        this.players.remove(player);
+        players.remove(player);
         player.setGameMode(GameMode.SPECTATOR);
     }
 
