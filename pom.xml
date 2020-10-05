@@ -5,6 +5,9 @@
     <artifactId>survivalgames</artifactId>
     <version>1.0</version>
 
+    <name>SurvivalGames</name>
+    <description>minecraft survival mini-game</description>
+
     <repositories>
         <repository>
             <id>spigot-repo</id>
