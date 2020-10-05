@@ -34,7 +34,7 @@ public class ConfigAnnotations implements PluginAnnotationsLoader {
 				try {
 					if (value != null)
 						field.set(object, value);
-				} catch (IllegalArgumentException | IllegalAccessException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

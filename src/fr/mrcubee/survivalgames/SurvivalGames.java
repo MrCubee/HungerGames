@@ -7,9 +7,7 @@ import fr.mrcubee.world.WorldLoader;
 import net.arkadgames.survivalgame.sql.DataBase;
 
 import java.io.File;
-import java.sql.SQLException;
 
-import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

@@ -38,8 +38,7 @@ public class WorldLoader {
 			Object chunkProviderServer = fieldWorldServer.get(worldServer);
 			Method method = chunkProviderServer.getClass().getMethod("getChunkAt", new Class[] { Integer.TYPE, Integer.TYPE });
 			method.invoke(chunkProviderServer, new Object[] { Integer.valueOf(chunk.getX()), Integer.valueOf(chunk.getZ()) });
-		} catch (ClassNotFoundException | NoSuchFieldException | SecurityException | IllegalArgumentException
-				| IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
