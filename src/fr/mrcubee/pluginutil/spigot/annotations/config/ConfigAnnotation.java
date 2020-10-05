@@ -4,13 +4,10 @@ import java.lang.reflect.Field;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
 
-import fr.mrcubee.pluginutil.spigot.annotations.PluginAnnotationsLoader;
+public class ConfigAnnotation {
 
-public class ConfigAnnotations implements PluginAnnotationsLoader {
-
-	private void loadField(FileConfiguration config, Object object, Field field, Config configValue) {
+	private static void loadField(FileConfiguration config, Object object, Field field, Config configValue) {
 		Object value;
 
 		if (config == null  || object == null || field == null || configValue == null
@@ -26,12 +23,11 @@ public class ConfigAnnotations implements PluginAnnotationsLoader {
 		} catch (Exception ignored) {}
 	}
 
-    @Override
-    public void loadClass(Plugin plugin, Object... objects) {
-        if (plugin == null || objects == null)
+    public static void loadClass(FileConfiguration fileConfiguration, Object... objects) {
+        if (fileConfiguration == null || objects == null)
             return;
         for (Object object : objects)
             for (Field field : object.getClass().getDeclaredFields())
-                loadField(plugin.getConfig(), object, field, field.getAnnotation(Config.class));
+                loadField(fileConfiguration, object, field, field.getAnnotation(Config.class));
     }
 }
