@@ -29,7 +29,7 @@ public class Timer extends Thread {
         World world = null;
         GameStats gameStats;
 
-        while ((survivalGames.getGame() != null) && ((gameStats = survivalGames.getGame().getGameStats()) != GameStats.CLOSING)) {
+        while (survivalGames.getGame() != null && (gameStats = survivalGames.getGame().getGameStats()) != GameStats.CLOSING) {
             if (world == null)
                 world = survivalGames.getGame().getGameWorld();
             else {
@@ -66,19 +66,19 @@ public class Timer extends Thread {
     public void waitting() {
         if ((time < 0) || (System.currentTimeMillis() - time >= 1000)) {
             time = System.currentTimeMillis();
-            survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.GRAY + "Player: " + ChatColor.RED + survivalGames.getGame().getPlayerInGame().size()
+            survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.GRAY + "Player: " + ChatColor.RED + survivalGames.getGame().getNumberPlayer()
                     + ChatColor.GRAY + "/" + ChatColor.RED + survivalGames.getGame().getGameSetting().getMinPlayer(), -1);
             survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.GREEN + "Waiting for players...", -2);
         }
 
-        if ((survivalGames.getServer().getOnlinePlayers().size() >= survivalGames.getGame().getGameSetting().getMinPlayer()) || survivalGames.getGame().isForcestart()) {
+        if (survivalGames.getGame().getNumberPlayer() >= survivalGames.getGame().getGameSetting().getMinPlayer() || survivalGames.getGame().isForcestart()) {
             time = -1;
             survivalGames.getGame().setGameStats(GameStats.STARTING);
         }
     }
 
     public void starting() {
-        if ((survivalGames.getServer().getOnlinePlayers().size() < survivalGames.getGame().getGameSetting().getMinPlayer()) && (!survivalGames.getGame().isForcestart())) {
+        if (survivalGames.getGame().getNumberPlayer() < survivalGames.getGame().getGameSetting().getMinPlayer() && !survivalGames.getGame().isForcestart()) {
             time = -1;
             survivalGames.getGame().setGameStats(GameStats.WAITING);
             return;
@@ -91,7 +91,7 @@ public class Timer extends Thread {
 
         if (System.currentTimeMillis() - time >= 1000) {
             time = System.currentTimeMillis();
-            survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.GRAY + "Player: " + ChatColor.RED + survivalGames.getGame().getPlayerInGame().size()
+            survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.GRAY + "Player: " + ChatColor.RED + survivalGames.getGame().getNumberPlayer()
                     + ChatColor.GRAY + "/" + ChatColor.RED + survivalGames.getGame().getGameSetting().getMinPlayer(), -1);
             survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.GOLD + "Starts in " + ChatColor.RED + PingServer.getTime(seconds), -2);
             if (seconds <= 10) {
@@ -103,7 +103,6 @@ public class Timer extends Thread {
             }
             seconds--;
         }
-
         if (seconds <= 0) {
             time = -1;
             Bukkit.getScheduler().runTask(survivalGames, new Runnable() {
@@ -137,7 +136,7 @@ public class Timer extends Thread {
         }
 
         if (System.currentTimeMillis() - time >= 1000) {
-            int players = survivalGames.getServer().getOnlinePlayers().size() - survivalGames.getGame().getNumberSpectator();
+            int players = survivalGames.getGame().getNumberPlayer();
             long border = (int) (survivalGames.getGame().getGameWorld().getWorldBorder().getSize() / 2);
 
             survivalGames.getGame().getPluginScoreBoardManager().putLine(ChatColor.GRAY + "Player: " + ChatColor.RED + players, -1);

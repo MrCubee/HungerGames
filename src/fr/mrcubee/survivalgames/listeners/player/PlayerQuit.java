@@ -1,8 +1,6 @@
 package fr.mrcubee.survivalgames.listeners.player;
 
-import java.sql.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,12 +10,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scoreboard.Score;
 
 import fr.mrcubee.survivalgames.GameStats;
 import fr.mrcubee.survivalgames.SurvivalGames;
 import fr.mrcubee.survivalgames.kit.Kit;
-import net.arkadgames.survivalgame.sql.PlayerData;
 
 public class PlayerQuit implements Listener {
 	
@@ -29,20 +25,22 @@ public class PlayerQuit implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void playerQuitEvent(PlayerQuitEvent event) {
 		GameStats gameStats = survivalGames.getGame().getGameStats();
+		Set<Player> playerInGame;
+		Kit kit;
+		String kitName;
+
+		if (survivalGames.getGame().isSpectator(event.getPlayer()))
+			return;
+		survivalGames.getGame().addSpectator(event.getPlayer());
 		if (gameStats != GameStats.DURING) {
 			event.setQuitMessage(ChatColor.RED + "[-] " + event.getPlayer().getName());
 			return;
 		}
 		event.setQuitMessage(null);
-		if (survivalGames.getGame().isSpectator(event.getPlayer())) {
-			survivalGames.getGame().removeSpectator(event.getPlayer());
-			return;
-		}
-		Kit kit = survivalGames.getGame().getKitManager().getKitByPlayer(event.getPlayer());
-		String kitName = (kit == null) ? "No Kit" : kit.getName();
-		
+		kit = survivalGames.getGame().getKitManager().getKitByPlayer(event.getPlayer());
+		kitName = (kit == null) ? "No Kit" : kit.getName();
 		//survivalGames.getDataBase().updatefinishPlayerData(event.getPlayer(), false);
-		List<Player> playerInGame = survivalGames.getGame().getPlayerInGame();
+		playerInGame = survivalGames.getGame().getPlayerInGame();
 		playerInGame.remove(event.getPlayer());
 		int players = playerInGame.size();
 		if (players > 1) {

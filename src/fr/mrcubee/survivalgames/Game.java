@@ -5,8 +5,7 @@ import fr.mrcubee.survivalgames.api.event.GameStatsChangeEvent;
 import fr.mrcubee.survivalgames.kit.KitManager;
 import fr.mrcubee.survivalgames.scoreboardmanager.PluginScoreBoardManager;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,7 +28,7 @@ public class Game {
     private int totalPlayers;
     private boolean pvpEnable;
     private long gameDuration;
-    private List<Player> spectators;
+    private HashSet<Player> players;
 
     protected Game(SurvivalGames survivalGames) {
         this.survivalGames = survivalGames;
@@ -37,7 +36,7 @@ public class Game {
         this.survivalGamesAPI = new SurvivalGamesAPI(this);
         this.gameStats = GameStats.OPENING;
         this.gameSetting = new GameSetting();
-        this.spectators = new ArrayList<Player>();
+        this.players = new HashSet<Player>();
         this.forcestart = false;
         this.pvpEnable = false;
 
@@ -138,41 +137,33 @@ public class Game {
         return this.survivalGames;
     }
 
-    public List<Player> getPlayerInGame() {
-        List<Player> players = new ArrayList();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!isSpectator(player)) {
-                players.add(player);
-            }
-        }
-        return players;
+    public Set<Player> getPlayerInGame() {
+        return (Set<Player>) this.players.clone();
+    }
+
+    public int getNumberPlayer() {
+        return this.players.size();
+    }
+
+    public void addPlayer(Player player) {
+        if (player == null || !player.isOnline())
+            return;
+        this.players.add(player);
+        player.setGameMode(GameMode.SURVIVAL);
     }
 
     public void addSpectator(Player player) {
-        if ((player == null) || (!player.isOnline()) || (this.spectators.contains(player))) {
+        if (player == null)
             return;
-        }
-        this.spectators.add(player);
+        this.players.remove(player);
         player.setGameMode(GameMode.SPECTATOR);
     }
 
-    public void removeSpectator(Player player) {
-        if ((player == null) || (!this.spectators.contains(player))) {
-            return;
-        }
-        this.spectators.remove(player);
-    }
-
     public boolean isSpectator(Player player) {
-        if (player == null) {
-            return false;
-        }
-        return this.spectators.contains(player);
+        return player != null && !this.players.contains(player);
     }
 
     public int getNumberSpectator() {
-        if (spectators == null)
-            return 0;
-        return spectators.size();
+        return this.survivalGames.getServer().getOnlinePlayers().size() - this.players.size();
     }
 }

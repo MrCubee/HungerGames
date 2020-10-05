@@ -40,6 +40,7 @@ public class PlayerJoin implements Listener {
 	private void setupWaitingPlayer(Player player) {
 		player.getInventory().clear();
 		player.getInventory().addItem(createKitItem());
+		this.survivalGames.getGame().addPlayer(player);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
