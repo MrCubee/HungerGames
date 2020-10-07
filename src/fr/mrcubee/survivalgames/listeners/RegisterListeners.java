@@ -15,6 +15,7 @@ public class RegisterListeners {
 		fr.mrcubee.survivalgames.listeners.player.RegisterListeners.register(survivalGames);
 		fr.mrcubee.survivalgames.listeners.server.RegisterListeners.register(survivalGames);
 		fr.mrcubee.survivalgames.listeners.inventory.RegisterListeners.register(survivalGames);
+		fr.mrcubee.survivalgames.listeners.game.RegisterListeners.register(survivalGames);
 	}
 
 }

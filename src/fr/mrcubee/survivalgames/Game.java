@@ -3,7 +3,7 @@ package fr.mrcubee.survivalgames;
 import fr.mrcubee.pluginutil.spigot.annotations.PluginAnnotations;
 import fr.mrcubee.survivalgames.api.event.GameStatsChangeEvent;
 import fr.mrcubee.survivalgames.kit.KitManager;
-import fr.mrcubee.survivalgames.scoreboardmanager.PluginScoreBoardManager;
+import fr.mrcubee.survivalgames.scoreboard.PluginScoreBoardManager;
 
 import java.util.*;
 
@@ -27,13 +27,14 @@ public class Game {
     private final GameSetting gameSetting;
     private PluginScoreBoardManager pluginScoreBoardManager;
     private GameStats gameStats;
+    private long nextStatTime;
     private World gameWorld;
     private Location spawn;
     private boolean forceStart;
     private boolean forcePvp;
     private int totalPlayers;
     private boolean pvpEnable;
-    private long gameDuration;
+    private long gameEndTime;
     private HashSet<Player> players;
 
     /**
@@ -63,9 +64,9 @@ public class Game {
      * It allows you to retrieve the party world, and to prepare the ScoreBoard and the kits manager.
      */
     protected void init() {
-        this.gameWorld = survivalGames.getServer().getWorld(gameSetting.getWorldName());
-        this.pluginScoreBoardManager = new PluginScoreBoardManager(
-                this.survivalGames.getServer().getScoreboardManager().getMainScoreboard());
+        this.gameWorld = survivalGames.getServer().getWorld(this.gameSetting.getWorldName());
+        this.pluginScoreBoardManager = new PluginScoreBoardManager(this);
+        this.pluginScoreBoardManager.runTaskTimerAsynchronously(this.survivalGames, 0L, 20L);
         this.survivalGames.getCommand("kit").setExecutor(this.kitManager);
     }
 
@@ -91,20 +92,34 @@ public class Game {
     protected void setGameStats(GameStats newStats) {
         if (newStats == null)
             return;
-        survivalGames.getServer().getPluginManager().callEvent(new GameStatsChangeEvent(newStats));
-        gameStats = newStats;
+        this.survivalGames.getServer().getPluginManager().callEvent(new GameStatsChangeEvent(newStats));
+        this.gameStats = newStats;
+        switch (this.gameStats) {
+            case STARTING:
+                this.nextStatTime = System.currentTimeMillis() + 60000;
+                break;
+            case DURING:
+                this.nextStatTime = System.currentTimeMillis() + (this.getGameSetting().getTimePvp() * 1000);
+                break;
+            case STOPPING:
+                this.nextStatTime = System.currentTimeMillis() + 20000;
+        }
     }
 
     public GameStats getGameStats() {
-        return gameStats;
+        return this.gameStats;
+    }
+
+    public long getNextStatTime() {
+        return this.nextStatTime;
     }
 
     public GameSetting getGameSetting() {
-        return gameSetting;
+        return this.gameSetting;
     }
 
     public World getGameWorld() {
-        return gameWorld;
+        return this.gameWorld;
     }
 
     protected void setSpawn(Location spawn) {
@@ -112,31 +127,31 @@ public class Game {
     }
 
     public Location getSpawn() {
-        return spawn.clone();
+        return this.spawn.clone();
     }
 
-    protected void setTotalPlayers(int totalPlayers) {
+    public void setTotalPlayers(int totalPlayers) {
         this.totalPlayers = totalPlayers;
     }
 
     public int getTotalPlayers() {
-        return totalPlayers;
+        return this.totalPlayers;
     }
 
     protected void forceStart() {
-        forceStart = true;
+        this.forceStart = true;
     }
 
     public boolean isForceStart() {
-        return forceStart;
+        return this.forceStart;
     }
 
     public void forcePvp() {
-        forcePvp = true;
+        this.forcePvp = true;
     }
 
     public boolean isForcePvp() {
-        return forcePvp;
+        return this.forcePvp;
     }
 
     protected void setPvpEnable(boolean pvpEnable) {
@@ -144,19 +159,7 @@ public class Game {
     }
 
     public boolean isPvpEnable() {
-        return pvpEnable;
-    }
-
-    protected void setGameDuration(long gameDuration) {
-        this.gameDuration = gameDuration;
-    }
-
-    public long getGameDuration() {
-        return gameDuration;
-    }
-
-    protected SurvivalGames getSurvivalGames() {
-        return survivalGames;
+        return this.pvpEnable;
     }
 
     public Set<Player> getPlayerInGame() {
@@ -187,5 +190,13 @@ public class Game {
 
     public int getNumberSpectator() {
         return this.survivalGames.getServer().getOnlinePlayers().size() - this.players.size();
+    }
+
+    public void setGameEndTime(long gameEndTime) {
+        this.gameEndTime = gameEndTime;
+    }
+
+    public long getGameEndTime() {
+        return gameEndTime;
     }
 }

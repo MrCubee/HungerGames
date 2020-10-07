@@ -46,8 +46,8 @@ public class PlayerJoin implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void playerJoinEvent(PlayerJoinEvent event) {
 		GameStats gameStats = survivalGames.getGame().getGameStats();
-		
-		survivalGames.getGame().getPluginScoreBoardManager().addPlayer(event.getPlayer());
+
+		this.survivalGames.getGame().getPluginScoreBoardManager().getPlayerSideBar(event.getPlayer());
 		if (gameStats == GameStats.DURING) {
 			event.setJoinMessage(null);
 			setupSpectator(event.getPlayer());

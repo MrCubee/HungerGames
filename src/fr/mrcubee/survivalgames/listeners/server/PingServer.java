@@ -41,16 +41,15 @@ public class PingServer implements Listener {
 	}
 
 	public void starting(ServerListPingEvent event) {
-		event.setMotd(ChatColor.GOLD + "Launching game in " + ChatColor.GRAY + getTime(survivalGames.getTimer().getSeconds()));
+		long seconds = (this.survivalGames.getGame().getNextStatTime() - System.currentTimeMillis()) / 1000;
+
+		event.setMotd(ChatColor.GOLD + "Launching game in " + ChatColor.GRAY + getTime(seconds));
 	}
 
 	public void during(ServerListPingEvent event) {
-		long time = survivalGames.getGame().getGameSetting().getTimeBorder() - survivalGames.getGame().getGameDuration();
-		
-		if (time >= 0)
-			event.setMotd(ChatColor.RED + "Game is currently launched.\n" + ChatColor.GOLD + "End of the game in about: " + ChatColor.GRAY + getTime(time));
-		else
-			event.setMotd(ChatColor.RED + "Game is currently launched.\n" + ChatColor.GOLD + "End of the game in about: " + ChatColor.GRAY + getTime(time));
+		long seconds = (this.survivalGames.getGame().getGameEndTime() - System.currentTimeMillis()) / 1000;
+
+		event.setMotd(ChatColor.RED + "Game is currently launched.\n" + ChatColor.GOLD + "End of the game in about: " + ChatColor.GRAY + getTime(seconds));
 	}
 
 	public void stopping(ServerListPingEvent event) {
@@ -59,8 +58,8 @@ public class PingServer implements Listener {
 	
 	public static String longToString(long number) {
 		if (number > -1 && number < 10)
-			return "0"+number;
-		return ""+number;
+			return "0" + number;
+		return Long.toString(number);
 	}
 
 	public static String getTime(long seconds) {

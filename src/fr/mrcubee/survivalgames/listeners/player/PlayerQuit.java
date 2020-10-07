@@ -24,14 +24,15 @@ public class PlayerQuit implements Listener {
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void playerQuitEvent(PlayerQuitEvent event) {
-		GameStats gameStats = survivalGames.getGame().getGameStats();
+		GameStats gameStats = this.survivalGames.getGame().getGameStats();
 		Set<Player> playerInGame;
 		Kit kit;
 		String kitName;
 
-		if (survivalGames.getGame().isSpectator(event.getPlayer()))
+		if (this.survivalGames.getGame().isSpectator(event.getPlayer()))
 			return;
-		survivalGames.getGame().addSpectator(event.getPlayer());
+		this.survivalGames.getGame().addSpectator(event.getPlayer());
+		this.survivalGames.getGame().getPluginScoreBoardManager().removePlayerSideBar(event.getPlayer());
 		if (gameStats != GameStats.DURING) {
 			event.setQuitMessage(ChatColor.RED + "[-] " + event.getPlayer().getName());
 			return;

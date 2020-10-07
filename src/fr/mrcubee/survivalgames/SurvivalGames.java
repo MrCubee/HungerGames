@@ -1,7 +1,6 @@
 package fr.mrcubee.survivalgames;
 
 import fr.mrcubee.survivalgames.listeners.RegisterListeners;
-import fr.mrcubee.survivalgames.worldmanager.BorderManager;
 import fr.mrcubee.util.FileUtil;
 import fr.mrcubee.world.WorldLoader;
 import net.arkadgames.survivalgame.sql.DataBase;
@@ -34,19 +33,16 @@ public class SurvivalGames extends JavaPlugin {
 
 	public void onEnable() {
 		Location spawn;
-		
+		World world;
+
 		getGame().init();
 		this.timer = new Timer(this);
-		this.timer.start();
-
-		World world = game.getGameWorld();
-		
+		world = game.getGameWorld();
 		if (world == null) {
 			getServer().shutdown();
 			return;
 		}
 		spawn = new Location(world, 0.0D, world.getMaxHeight(), 0.0D);
-		
 		loadArea(world);
 		while (spawn.getBlockY() >= 1) {
 			if (spawn.getBlock().getType().equals(Material.AIR))
@@ -62,8 +58,6 @@ public class SurvivalGames extends JavaPlugin {
 		}
 		this.game.setSpawn(spawn);
 		world.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockY());
-		BorderManager.setCenter(world, 0.0D, 0.0D);
-		BorderManager.setWorldBorder(world, getGame().getGameSetting().getMaxBorder());
 		RegisterListeners.register(this);
 		/*
 		try {
@@ -76,6 +70,7 @@ public class SurvivalGames extends JavaPlugin {
 		}
 		*/
 		getGame().setGameStats(GameStats.WAITING);
+		this.timer.runTaskTimer(this, 0L, 20L);
 	}
 
 	public void onDisable() {
