@@ -7,7 +7,7 @@ public class FileUtil {
 	public static void delete(File file) {
 		File[] files;
 
-		if (file == null || file.exists())
+		if (file == null || !file.exists())
 			return;
 		else if (file.isFile()) {
 			file.delete();
