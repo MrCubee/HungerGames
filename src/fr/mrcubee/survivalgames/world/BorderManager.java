@@ -1,4 +1,4 @@
-package fr.mrcubee.survivalgames.worldmanager;
+package fr.mrcubee.survivalgames.world;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -7,6 +7,7 @@ public class BorderManager {
 	
 	public static void setCenter(World world, Location location) {
 		if (world == null || location == null)
+			return;
 		world.getWorldBorder().setWarningDistance(10);
 		world.getWorldBorder().setCenter(location.getX(), location.getZ());
 	}
@@ -18,7 +19,7 @@ public class BorderManager {
 	}
 	
 	public static void setWorldBorder(World world, double size) {
-		if ((world == null) || (size < 1))
+		if (world == null || size < 1)
 			return;
 		world.getWorldBorder().setSize(size);
 	}
