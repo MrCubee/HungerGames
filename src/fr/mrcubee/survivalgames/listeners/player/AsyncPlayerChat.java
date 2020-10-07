@@ -1,5 +1,8 @@
 package fr.mrcubee.survivalgames.listeners.player;
 
+import fr.mrcubee.survivalgames.Game;
+import fr.mrcubee.survivalgames.GameStats;
+import fr.mrcubee.survivalgames.SurvivalGames;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -10,26 +13,26 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class AsyncPlayerChat implements Listener {
+
+	private final SurvivalGames survivalGames;
+
+	public AsyncPlayerChat(SurvivalGames survivalGames) {
+		this.survivalGames = survivalGames;
+	}
 	
 	@EventHandler
-	public void PlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		Player target;
-		Player player = event.getPlayer();
-		String[] args;
-		
-		if ((!player.isOp()) && (!player.getGameMode().equals(GameMode.SPECTATOR)))
-			return;
-		args = event.getMessage().split(" ");
-		if (args.length < 1 || (!args[0].equalsIgnoreCase("/tp")))
+	public void asyncPlayerChat(AsyncPlayerChatEvent event) {
+		Game game;
+
+		game = this.survivalGames.getGame();
+		if (!game.isSpectator(event.getPlayer()))
 			return;
 		event.setCancelled(true);
-		if (args.length < 2)
-			return;
-		if ((target = Bukkit.getPlayer(args[1])) == null) {
-			player.sendMessage(ChatColor.RED + "The player is not connected or does not exist.");
-			return;
-		}
-		player.teleport(target);
+		this.survivalGames.getServer().getOnlinePlayers().stream().filter(game::isSpectator).forEach(player -> {
+			String message = String.format(event.getFormat(), event.getPlayer().getName(), event.getMessage());
+
+			player.sendMessage(ChatColor.GRAY + message);
+		});
 	}
 	
 }

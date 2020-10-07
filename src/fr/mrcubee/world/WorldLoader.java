@@ -1,13 +1,12 @@
 package fr.mrcubee.world;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 
-import fr.mrcubee.survivalgames.world.selection.Selection;
+import fr.mrcubee.survivalgames.world.Selection;
 
 /**
  * 
