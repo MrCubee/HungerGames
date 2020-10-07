@@ -9,8 +9,8 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.UUID;
 
+import fr.mrcubee.scoreboard.Score;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Score;
 
 import fr.mrcubee.survivalgames.SurvivalGames;
 
@@ -121,8 +121,8 @@ public class DataBase {
 		if (playerData == null)
 			playerData = new PlayerData();
 		playerData.lastWin = win;
-		playerData.totalTime += survivalGames.getGame().getGameDuration() / 60;
-		score = survivalGames.getGame().getPluginScoreBoardManager().getObjectiveKill().getScore(player);
+		playerData.totalTime += (this.survivalGames.getGame().getGameEndTime() - System.currentTimeMillis()) / 60000;
+		score = survivalGames.getGame().getPluginScoreBoardManager().getKillObjective().getScore(player.getName());
 		playerData.playerKill += (score != null) ? score.getScore() : 0;
 		if (win)
 			playerData.win++;
