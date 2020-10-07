@@ -1,9 +1,10 @@
 package fr.mrcubee.survivalgames.listeners.player;
+
 import org.bukkit.plugin.PluginManager;
 
 import fr.mrcubee.survivalgames.SurvivalGames;
 
-public class RegisterListeners {
+public final class RegisterListeners {
 	
 	public static void register(SurvivalGames survivalGames) {
 		PluginManager pluginManager = survivalGames.getServer().getPluginManager();
@@ -19,7 +20,7 @@ public class RegisterListeners {
 		pluginManager.registerEvents(new PlayerPickupItem(survivalGames), survivalGames);
 		pluginManager.registerEvents(new PlayerPreLogin(survivalGames), survivalGames);
 		pluginManager.registerEvents(new PlayerQuit(survivalGames), survivalGames);
-		pluginManager.registerEvents(new GameStatsEvent(survivalGames), survivalGames);
-		pluginManager.registerEvents(new AsyncPlayerChat(), survivalGames);
+		pluginManager.registerEvents(new PlayerCommandPreprocess(survivalGames), survivalGames);
+		pluginManager.registerEvents(new AsyncPlayerChat(survivalGames), survivalGames);
 	}
 }
