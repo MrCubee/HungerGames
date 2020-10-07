@@ -1,4 +1,4 @@
-package fr.mrcubee.survivalgames.world.selection;
+package fr.mrcubee.survivalgames.world;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
