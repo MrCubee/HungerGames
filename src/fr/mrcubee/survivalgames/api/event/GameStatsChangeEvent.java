@@ -8,7 +8,7 @@ import fr.mrcubee.survivalgames.GameStats;
 public class GameStatsChangeEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
-	private GameStats                gameStats;
+	private GameStats gameStats;
 	
 	public GameStatsChangeEvent(GameStats gameStats) {
 		this.gameStats = gameStats;
