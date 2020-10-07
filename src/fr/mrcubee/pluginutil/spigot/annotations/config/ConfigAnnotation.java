@@ -11,7 +11,7 @@ public class ConfigAnnotation {
 		Object value;
 
 		if (config == null  || object == null || field == null || configValue == null
-		|| config.contains(configValue.path()))
+		|| !config.contains(configValue.path()))
 			return;
 		field.setAccessible(true);
 		value = config.get(configValue.path());
