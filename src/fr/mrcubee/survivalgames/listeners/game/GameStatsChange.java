@@ -12,8 +12,10 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 public class GameStatsChange implements Listener {
 
@@ -51,8 +53,11 @@ public class GameStatsChange implements Listener {
         game.setGameEndTime(System.currentTimeMillis() + (game.getGameSetting().getTimeBorder() + 20) * 1000);
         game.setTotalPlayers(this.survivalGames.getGame().getNumberPlayer());
         this.survivalGames.getServer().getOnlinePlayers().forEach(player -> {
-            player.teleport(this.survivalGames.getGame().getSpawn());
             player.getInventory().clear();
+            player.setVelocity(new Vector(0, 0, 0));
+            player.setFireTicks(0);
+            player.teleport(this.survivalGames.getGame().getSpawn());
+            player.setHealth(player.getMaxHealth());
             player.getInventory().addItem(new ItemStack(Material.COMPASS));
             player.getInventory().addItem(new ItemStack(Material.APPLE, 10));
         });
@@ -68,7 +73,7 @@ public class GameStatsChange implements Listener {
         server.shutdown();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void gameStatsChange(GameStatsChangeEvent event) {
         updatePlayerStats();
         switch (event.getGameStats()) {
