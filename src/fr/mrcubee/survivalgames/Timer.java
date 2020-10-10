@@ -62,7 +62,7 @@ public class Timer extends BukkitRunnable {
             playersPlaySound(Sound.ORB_PICKUP, 100, 2);
             game.setPvpEnable(true);
             game.broadcastMessage(ChatColor.GOLD + "PvP is enabled !");
-        } else if (seconds == 10 && seconds <= 5) {
+        } else if (seconds == 10 || seconds <= 5) {
             playersPlaySound(Sound.ORB_PICKUP, 100, 1);
             game.broadcastMessage("PvP will be active in " + ChatColor.RED + seconds + " second" + ((seconds > 1) ? "s" : ""));
         }
@@ -92,8 +92,7 @@ public class Timer extends BukkitRunnable {
 
         if (survivalGames.getGame() == null || (world = survivalGames.getGame().getGameWorld()) == null
             || (gameStats = survivalGames.getGame().getGameStats()) == GameStats.CLOSING) {
-            if (survivalGames.getGame().getGameStats() != GameStats.CLOSING)
-                survivalGames.getGame().setGameStats(GameStats.CLOSING);
+            survivalGames.getGame().setGameStats(GameStats.CLOSING);
             this.cancel();
             return;
         }
@@ -101,7 +100,8 @@ public class Timer extends BukkitRunnable {
             world.setThunderDuration(0);
             world.setWeatherDuration(0);
             world.setStorm(false);
-        } else if ((gameStats == GameStats.WAITING || gameStats == GameStats.STARTING) && world.getTime() != 0)
+        }
+        if ((gameStats == GameStats.WAITING || gameStats == GameStats.STARTING) && world.getTime() != 0)
             world.setTime(0);
         switch (survivalGames.getGame().getGameStats()) {
             case WAITING:
