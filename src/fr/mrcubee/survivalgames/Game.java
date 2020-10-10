@@ -66,7 +66,7 @@ public class Game {
     protected void init() {
         this.gameWorld = survivalGames.getServer().getWorld(this.gameSetting.getWorldName());
         this.pluginScoreBoardManager = new PluginScoreBoardManager(this);
-        this.pluginScoreBoardManager.runTaskTimerAsynchronously(this.survivalGames, 0L, 20L);
+        this.pluginScoreBoardManager.runTaskTimerAsynchronously(this.survivalGames, 0L, 10L);
         this.survivalGames.getCommand("kit").setExecutor(this.kitManager);
     }
 
@@ -90,7 +90,7 @@ public class Game {
     }
 
     protected void setGameStats(GameStats newStats) {
-        if (newStats == null)
+        if (newStats == null || this.gameStats == newStats)
             return;
         this.survivalGames.getServer().getPluginManager().callEvent(new GameStatsChangeEvent(newStats));
         this.gameStats = newStats;
