@@ -96,13 +96,13 @@ public class Game {
         this.gameStats = newStats;
         switch (this.gameStats) {
             case STARTING:
-                this.nextStatTime = System.currentTimeMillis() + 60000;
+                this.nextStatTime = System.currentTimeMillis() + (this.getGameSetting().getStartTime() * 1000);
                 break;
             case DURING:
                 this.nextStatTime = System.currentTimeMillis() + (this.getGameSetting().getTimePvp() * 1000);
                 break;
             case STOPPING:
-                this.nextStatTime = System.currentTimeMillis() + 20000;
+                this.nextStatTime = System.currentTimeMillis() + (this.getGameSetting().getRestartTime() * 1000);
         }
     }
 

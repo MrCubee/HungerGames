@@ -27,8 +27,14 @@ public class GameSetting {
     @Config(path = "world.border.time")
     private long timeBorder = 5400;
 
+    @Config(path = "game.startTime")
+    private long startTime = 60;
+
     @Config(path = "game.pvpTime")
     private long timePvp = 300;
+
+    @Config(path = "game.restartTime")
+    private long restartTime = 20;
 
     public String getMenuKitName() {
         return menuKitName;
@@ -58,8 +64,15 @@ public class GameSetting {
         return timeBorder;
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
     public long getTimePvp() {
         return timePvp;
     }
 
+    public long getRestartTime() {
+        return restartTime;
+    }
 }
