@@ -55,6 +55,7 @@ public class PlayerJoin implements Listener {
 			setupWaitingPlayer(event.getPlayer());
 			event.setJoinMessage(ChatColor.GREEN + "[+] " + event.getPlayer().getName());
 		}
+		
 		event.getPlayer().teleport(survivalGames.getGame().getSpawn());
 	}
 }

@@ -1,14 +1,16 @@
 package fr.mrcubee.survivalgames;
 
 import fr.mrcubee.survivalgames.listeners.RegisterListeners;
+import fr.mrcubee.survivalgames.step.StepManager;
+import fr.mrcubee.survivalgames.step.steps.FeastStep;
+import fr.mrcubee.survivalgames.step.steps.GameStep;
+import fr.mrcubee.survivalgames.step.steps.PvpStep;
 import fr.mrcubee.util.FileUtil;
-import fr.mrcubee.world.WorldLoader;
+import fr.mrcubee.world.WorldSpawnSetup;
 import net.arkadgames.survivalgame.sql.DataBase;
 
 import java.io.File;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -32,32 +34,29 @@ public class SurvivalGames extends JavaPlugin {
 	}
 
 	public void onEnable() {
-		Location spawn;
+		StepManager stepManager;
 		World world;
 
-		getGame().init();
+		this.game.init();
+
+		// **STEPS** //
+		stepManager = this.game.getStepManager();
+		stepManager.registerStep(PvpStep.create(this.game));
+		stepManager.registerStep(GameStep.create(this.game));
+		stepManager.registerStep(FeastStep.create(this.game));
+		// **END STEPS** //
+
 		this.timer = new Timer(this);
-		world = game.getGameWorld();
-		if (world == null) {
+
+		// **WORLD SETUP** //
+		world = this.game.getGameWorld();
+		if (world == null || !WorldSpawnSetup.setup(world, this.game.getGameSetting().getLoadSize(), this.getLogger())) {
 			getServer().shutdown();
 			return;
 		}
-		spawn = new Location(world, 0.0D, world.getMaxHeight(), 0.0D);
-		loadArea(world);
-		while (spawn.getBlockY() >= 1) {
-			if (spawn.getBlock().getType().equals(Material.AIR))
-				spawn.setY(spawn.getBlockY() - 1);
-			else {
-				spawn.setY(spawn.getBlockY() + 1);
-				break;
-			}
-		}
-		if (spawn.getBlock().getBiome().toString().toLowerCase().contains("ocean")) {
-			getServer().shutdown();
-			return;
-		}
-		this.game.setSpawn(spawn);
-		world.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockY());
+		this.game.getSpawnTerrainForming().runTaskTimer(this, 0L, 10L);
+		// **END WORLD SETUP**//
+
 		RegisterListeners.register(this);
 		/*
 		try {
@@ -67,7 +66,7 @@ public class SurvivalGames extends JavaPlugin {
 			e.printStackTrace();
 			this.getServer().shutdown();
 			return;
-		}
+		}boolean
 		*/
 		getGame().setGameStats(GameStats.WAITING);
 		this.timer.runTaskTimer(this, 0L, 20L);
@@ -76,26 +75,6 @@ public class SurvivalGames extends JavaPlugin {
 	public void onDisable() {
 		File logsFile = new File("./logs");
 		FileUtil.delete(logsFile);
-	}
-
-	public void loadArea(World world) {
-		int total = 441;
-		int loaded = 0;
-		int percent = 0;
-		int newPercent;
-
-		for (int z = -10; z <= 10; z++) {
-			for (int x = -10; x <= 10; x++) {
-				WorldLoader.loadChunks(world.getChunkAt(x, z));
-				loaded++;
-				newPercent = loaded * 100 / total;
-				if (newPercent != percent) {
-					percent = newPercent;
-					if (percent % 10 == 0)
-						getLogger().warning("Loading ... (" + percent + "%)");
-				}
-			}
-		}
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -114,9 +93,5 @@ public class SurvivalGames extends JavaPlugin {
 
 	public Game getGame() {
 		return this.game;
-	}
-
-	public Timer getTimer() {
-		return this.timer;
 	}
 }

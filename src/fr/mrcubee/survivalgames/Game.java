@@ -7,6 +7,8 @@ import fr.mrcubee.survivalgames.scoreboard.PluginScoreBoardManager;
 
 import java.util.*;
 
+import fr.mrcubee.survivalgames.step.StepManager;
+import fr.mrcubee.world.SpawnTerrainForming;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -24,12 +26,13 @@ import org.bukkit.entity.Player;
 public class Game {
     private final SurvivalGames survivalGames;
     private final KitManager kitManager;
+    private final StepManager stepManager;
     private final GameSetting gameSetting;
     private PluginScoreBoardManager pluginScoreBoardManager;
+    private World gameWorld;
+    private SpawnTerrainForming spawnTerrainForming;
     private GameStats gameStats;
     private long nextStatTime;
-    private World gameWorld;
-    private Location spawn;
     private boolean forceStart;
     private boolean forcePvp;
     private int totalPlayers;
@@ -49,6 +52,7 @@ public class Game {
     protected Game(SurvivalGames survivalGames) {
         this.survivalGames = survivalGames;
         this.kitManager = new KitManager(survivalGames);
+        this.stepManager = new StepManager(this);
         this.gameStats = GameStats.OPENING;
         this.gameSetting = new GameSetting();
         this.players = new HashSet<Player>();
@@ -65,6 +69,8 @@ public class Game {
      */
     protected void init() {
         this.gameWorld = survivalGames.getServer().getWorld(this.gameSetting.getWorldName());
+        this.spawnTerrainForming = SpawnTerrainForming.create(this.survivalGames, this.gameWorld,
+                this.gameSetting.getTerrainFormingSize(), this.survivalGames.getLogger());
         this.pluginScoreBoardManager = new PluginScoreBoardManager(this);
         this.pluginScoreBoardManager.runTaskTimerAsynchronously(this.survivalGames, 0L, 10L);
         this.survivalGames.getCommand("kit").setExecutor(this.kitManager);
@@ -85,12 +91,17 @@ public class Game {
         return this.kitManager;
     }
 
+    public StepManager getStepManager() {
+        return this.stepManager;
+    }
+
     public PluginScoreBoardManager getPluginScoreBoardManager() {
         return this.pluginScoreBoardManager;
     }
 
     protected void setGameStats(GameStats newStats) {
-        if (newStats == null || this.gameStats == newStats)
+        if (newStats == null || this.gameStats == newStats
+                || (this.gameStats.ordinal() >= 2 && this.gameStats.ordinal() > newStats.ordinal()))
             return;
         this.survivalGames.getServer().getPluginManager().callEvent(new GameStatsChangeEvent(newStats));
         this.gameStats = newStats;
@@ -99,7 +110,7 @@ public class Game {
                 this.nextStatTime = System.currentTimeMillis() + (this.getGameSetting().getStartTime() * 1000);
                 break;
             case DURING:
-                this.nextStatTime = System.currentTimeMillis() + (this.getGameSetting().getTimePvp() * 1000);
+                this.getStepManager().nextStep();
                 break;
             case STOPPING:
                 this.nextStatTime = System.currentTimeMillis() + (this.getGameSetting().getRestartTime() * 1000);
@@ -122,12 +133,14 @@ public class Game {
         return this.gameWorld;
     }
 
-    protected void setSpawn(Location spawn) {
-        this.spawn = spawn;
+    public SpawnTerrainForming getSpawnTerrainForming() {
+        return this.spawnTerrainForming;
     }
 
     public Location getSpawn() {
-        return this.spawn.clone();
+        if (this.spawnTerrainForming == null)
+            return this.gameWorld.getSpawnLocation();
+        return this.spawnTerrainForming.getSpawn();
     }
 
     public void setTotalPlayers(int totalPlayers) {
@@ -154,7 +167,7 @@ public class Game {
         return this.forcePvp;
     }
 
-    protected void setPvpEnable(boolean pvpEnable) {
+    public void setPvpEnable(boolean pvpEnable) {
         this.pvpEnable = pvpEnable;
     }
 
@@ -198,5 +211,9 @@ public class Game {
 
     public long getGameEndTime() {
         return gameEndTime;
+    }
+
+    public SurvivalGames getPlugin() {
+        return this.survivalGames;
     }
 }

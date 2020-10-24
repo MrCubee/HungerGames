@@ -1,5 +1,6 @@
 package fr.mrcubee.survivalgames.listeners.server;
 
+import fr.mrcubee.survivalgames.step.StepUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -43,41 +44,17 @@ public class PingServer implements Listener {
 	public void starting(ServerListPingEvent event) {
 		long seconds = (this.survivalGames.getGame().getNextStatTime() - System.currentTimeMillis()) / 1000;
 
-		event.setMotd(ChatColor.GOLD + "Launching game in " + ChatColor.GRAY + getTime(seconds));
+		event.setMotd(ChatColor.GOLD + "Launching game in " + ChatColor.GRAY + StepUtil.secondToString(seconds));
 	}
 
 	public void during(ServerListPingEvent event) {
 		long seconds = (this.survivalGames.getGame().getGameEndTime() - System.currentTimeMillis()) / 1000;
 
-		event.setMotd(ChatColor.RED + "Game is currently launched.\n" + ChatColor.GOLD + "End of the game in about: " + ChatColor.GRAY + getTime(seconds));
+		event.setMotd(ChatColor.RED + "Game is currently launched.\n" + ChatColor.GOLD + "End of the game in about: " + ChatColor.GRAY +  StepUtil.secondToString(seconds));
 	}
 
 	public void stopping(ServerListPingEvent event) {
 		event.setMotd(ChatColor.RED + "The party is finished restarting the server...");
-	}
-	
-	public static String longToString(long number) {
-		if (number > -1 && number < 10)
-			return "0" + number;
-		return Long.toString(number);
-	}
-
-	public static String getTime(long seconds) {
-		long s = seconds;
-		long m = 0;
-		long h = 0;
-		
-		if (seconds <= 0)
-			return "00:00:00";
-		if (s >= 60) {
-			m = s / 60;
-			s = s - (m * 60);
-		}
-		if (m >= 60) {
-			h = m / 60;
-			m = m - (h * 60);
-		}
-		return (longToString(h) + ":" + longToString(m) + ":" + longToString(s));
 	}
 
 }

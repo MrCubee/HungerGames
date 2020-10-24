@@ -1,5 +1,10 @@
+#
+# Author: MrCubee
+#
 world:
   name: world
+  loadSize: 320
+  terrainFormingSize: 60
   border:
     max: 2000
     min: 1
@@ -9,5 +14,9 @@ player:
   min: 10
 game:
   startTime: 60
-  pvpTime: 300
   restartTime: 20
+  step:
+    pvpTime: 300
+    feast:
+      beforeTime: 1200
+      spawnTime: 600

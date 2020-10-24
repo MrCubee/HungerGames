@@ -1,5 +1,7 @@
 package fr.mrcubee.survivalgames;
 
+import fr.mrcubee.survivalgames.step.Step;
+import fr.mrcubee.survivalgames.step.StepManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -14,6 +16,8 @@ public class Timer extends BukkitRunnable {
     }
 
     private void playersPlaySound(Sound sound, float volume, float pitch) {
+        if (sound == null)
+            return;
         this.survivalGames.getServer().getOnlinePlayers().forEach(player -> {
             player.playSound(player.getLocation(), sound, volume, pitch);
         });
@@ -46,26 +50,16 @@ public class Timer extends BukkitRunnable {
 
     public void during() {
         Game game = this.survivalGames.getGame();
-        long seconds;
+        StepManager stepManager = game.getStepManager();
+        Step step = stepManager.getCurrentStep();
 
-        if (game.getNumberPlayer() <= 1) {
+        if (step != null) {
+            step.update();
+            if (step.getEndSeconds() == 0)
+                stepManager.nextStep();
+        }
+        if (game.getNumberPlayer() <= 1)
             game.setGameStats(GameStats.STOPPING);
-            return;
-        } else if (game.isPvpEnable())
-            return;
-        else if (game.isForcePvp()) {
-            game.setPvpEnable(true);
-            return;
-        }
-        seconds = (game.getNextStatTime() - System.currentTimeMillis()) / 1000;
-        if (seconds <= 0) {
-            playersPlaySound(Sound.ORB_PICKUP, 100, 2);
-            game.setPvpEnable(true);
-            game.broadcastMessage(ChatColor.GOLD + "PvP is enabled !");
-        } else if (seconds == 10 || seconds <= 5) {
-            playersPlaySound(Sound.ORB_PICKUP, 100, 1);
-            game.broadcastMessage("PvP will be active in " + ChatColor.RED + seconds + " second" + ((seconds > 1) ? "s" : ""));
-        }
     }
 
     public void stopping() {

@@ -12,6 +12,12 @@ public class GameSetting {
     @Config(path = "world.name")
     private String worldName = "world";
 
+    @Config(path = "world.loadSize")
+    private int loadSize = 320;
+
+    @Config(path = "world.terrainFormingSize")
+    private int terrainFormingSize = 60;
+
     @Config(path = "player.min")
     private int minPlayer = 10;
 
@@ -30,7 +36,7 @@ public class GameSetting {
     @Config(path = "game.startTime")
     private long startTime = 60;
 
-    @Config(path = "game.pvpTime")
+    @Config(path = "game.step.pvpTime")
     private long timePvp = 300;
 
     @Config(path = "game.restartTime")
@@ -42,6 +48,14 @@ public class GameSetting {
 
     public String getWorldName() {
         return worldName;
+    }
+
+    public int getLoadSize() {
+        return loadSize;
+    }
+
+    public int getTerrainFormingSize() {
+        return terrainFormingSize;
     }
 
     public int getMinPlayer() {

@@ -25,18 +25,27 @@ public class WorldLoader {
 	 * @since 1.7
 	 */
 	private static boolean loadChunk(final Chunk chunk) {
+		String version;
+		Class<?> classCraftWorld;
+		Object craftWorld;
+		Method methodHandler;
+		Object worldServer;
+		Field fieldWorldServer;
+		Object chunkProviderServer;
+		Method method;
+
 		if (chunk == null)
 			return false;
-		String version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
+		version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
 		try {
-			Class<?> classCraftWorld = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
-			Object craftWorld = classCraftWorld.cast(chunk.getWorld());
-			Method methodHandler = classCraftWorld.getMethod("getHandle", new Class[0]);
-			Object worldServer = methodHandler.invoke(craftWorld, new Object[0]);
-			Field fieldWorldServer = worldServer.getClass().getField("chunkProviderServer");
-			Object chunkProviderServer = fieldWorldServer.get(worldServer);
-			Method method = chunkProviderServer.getClass().getMethod("getChunkAt", new Class[] { Integer.TYPE, Integer.TYPE });
-			method.invoke(chunkProviderServer, new Object[] { Integer.valueOf(chunk.getX()), Integer.valueOf(chunk.getZ()) });
+			classCraftWorld = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
+			craftWorld = classCraftWorld.cast(chunk.getWorld());
+			methodHandler = classCraftWorld.getMethod("getHandle");
+			worldServer = methodHandler.invoke(craftWorld);
+			fieldWorldServer = worldServer.getClass().getField("chunkProviderServer");
+			chunkProviderServer = fieldWorldServer.get(worldServer);
+			method = chunkProviderServer.getClass().getMethod("getChunkAt", Integer.TYPE, Integer.TYPE);
+			method.invoke(chunkProviderServer, chunk.getX(), chunk.getZ());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

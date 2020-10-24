@@ -4,7 +4,7 @@
 
     <groupId>fr.mrcubee.minecraft.plugin</groupId>
     <artifactId>survivalgames</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <name>SurvivalGames</name>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>com.github.ArkadGamesNetwork</groupId>
             <artifactId>ScoreBoardLib</artifactId>
-            <version>1.0</version>
+            <version>a12c4b68a2145362e482e82e6a21c10fb1086cab</version>
         </dependency>
     </dependencies>
 
