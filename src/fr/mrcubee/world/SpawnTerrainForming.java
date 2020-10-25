@@ -1,5 +1,6 @@
 package fr.mrcubee.world;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -16,35 +17,32 @@ import java.util.logging.Logger;
 
 public class SpawnTerrainForming extends BukkitRunnable {
 
-    private BukkitTask task;
+    private BukkitTask bukkitTask;
 
     private final Logger logger;
     private final World world;
-    private final int size;
-    private final int currentSpawnY;
-    private final int maxCurrent;
-    private int current;
+    private final int maxStep;
+    private int currentStep;
     private int currentY;
     private boolean grass;
     private boolean ground;
     private final Vector[] relativeLocations;
 
     private SpawnTerrainForming(World world, int size, Logger logger) {
+        int sizeSquared = size * size;
         LinkedList<Vector> tmpList = new LinkedList<Vector>();
-        int max = size * 2;
 
-        this.maxCurrent = 3;
+        this.maxStep = 3;
         this.logger = logger;
         this.world = world;
-        this.size = size;
-        this.currentSpawnY = world.getHighestBlockYAt(0, 0);
-        this.current = 0;
-        this.currentY = this.currentSpawnY + 30;
+        int currentSpawnY = world.getHighestBlockYAt(0, 0);
+        this.currentStep = 0;
+        this.currentY = currentSpawnY + 30;
         this.grass = false;
         this.ground = false;
-        for (int z = -max; z <= max; z++)
-            for (int x = -max; x <= max; x++)
-                if (Math.abs(x) + Math.abs(z) <= size)
+        for (int z = -size; z <= size; z++)
+            for (int x = -size; x <= size; x++)
+                if ((x * x) + (z * z) <= sizeSquared)
                     tmpList.add(new Vector(x, 0, z));
         Collections.shuffle(tmpList);
         this.relativeLocations = tmpList.toArray(new Vector[0]);
@@ -56,7 +54,8 @@ public class SpawnTerrainForming extends BukkitRunnable {
             return false;
         switch (material) {
             case AIR:
-            case WOOD:
+            case LOG:
+            case LOG_2:
             case LEAVES:
             case LEAVES_2:
             case LONG_GRASS:
@@ -67,16 +66,18 @@ public class SpawnTerrainForming extends BukkitRunnable {
 
     @Override
     public void run() {
+        Location last = new Location(this.world, 0, this.currentY - 1, 0);
         Location current = new Location(this.world,0, this.currentY, 0);
         Block block;
 
         if (!this.grass && isGround(this.world.getBlockAt(0, this.currentY, 0).getType())) {
             this.grass = true;
             this.world.setSpawnLocation(0, this.currentY + 1, 0);
-        } else if (this.current == 0 && !this.ground && this.grass)
+        } else if (this.currentStep == 0 && !this.ground && this.grass)
             this.ground = true;
-        for (int i = this.current; i < this.relativeLocations.length; i += this.maxCurrent) {
+        for (int i = this.currentStep; i < this.relativeLocations.length; i += this.maxStep) {
             current.add(this.relativeLocations[i]);
+            last.add(this.relativeLocations[i]);
             block = current.getBlock();
             if (this.ground)
                 block.setType(Material.DIRT);
@@ -86,16 +87,22 @@ public class SpawnTerrainForming extends BukkitRunnable {
                 block.setType(Material.AIR);
             current.subtract(this.relativeLocations[i]);
         }
-        if (this.current < this.maxCurrent)
-            this.current = (++this.current >= this.maxCurrent) ? 0 : this.current;
-        if (this.current == 0 && --this.currentY == 0)
+        if (this.currentStep < this.maxStep)
+            this.currentStep = (++this.currentStep >= this.maxStep) ? 0 : this.currentStep;
+        if (this.currentStep == 0 && --this.currentY == 0)
             this.cancel();
     }
 
     public Location getSpawn() {
-        if (this.grass)
-            return new Location(this.world, 0, this.world.getHighestBlockYAt(0, 0), 0);
-        return new Location(this.world, 0, this.currentY, 0);
+        return new Location(this.world, 0, this.world.getHighestBlockYAt(0, 0), 0);
+    }
+
+    public boolean isCurrentlyRunning() {
+        return Bukkit.getScheduler().isCurrentlyRunning(getTaskId());
+    }
+
+    public boolean isGrass() {
+        return this.grass;
     }
 
     public static SpawnTerrainForming create(Plugin plugin, World world, int size, Logger logger) {
