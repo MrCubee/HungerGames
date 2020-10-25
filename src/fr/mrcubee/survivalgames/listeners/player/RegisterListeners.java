@@ -7,8 +7,11 @@ import fr.mrcubee.survivalgames.SurvivalGames;
 public final class RegisterListeners {
 	
 	public static void register(SurvivalGames survivalGames) {
-		PluginManager pluginManager = survivalGames.getServer().getPluginManager();
-		
+		PluginManager pluginManager;
+
+		if (survivalGames == null)
+			return;
+		pluginManager = survivalGames.getServer().getPluginManager();
 		pluginManager.registerEvents(new BlockBreak(survivalGames), survivalGames);
 		pluginManager.registerEvents(new BlockPlace(survivalGames), survivalGames);
 		pluginManager.registerEvents(new FoodLevelChange(survivalGames), survivalGames);
