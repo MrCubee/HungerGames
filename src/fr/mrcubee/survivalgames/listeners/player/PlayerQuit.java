@@ -40,10 +40,9 @@ public class PlayerQuit implements Listener {
         DataBaseManager dataBaseManager = game.getDataBaseManager();
 
         if (game.getGameStats().ordinal() > 2) {
+            event.setQuitMessage(null);
             if (!game.isSpectator(event.getPlayer()) && event.getPlayer().getHealth() > 0)
                 event.getPlayer().setHealth(0);
-            game.addSpectator(event.getPlayer());
-            game.getPluginScoreBoardManager().removePlayerSideBar(event.getPlayer());
             updatePlayerData(game, event.getPlayer());
             if (game.getGameStats().ordinal() < 4)
                 dataBaseManager.sendPlayerData(event.getPlayer().getUniqueId());
@@ -51,5 +50,7 @@ public class PlayerQuit implements Listener {
             event.setQuitMessage(ChatColor.RED + "[-] " + event.getPlayer().getName());
             dataBaseManager.sendPlayerInfo(event.getPlayer().getUniqueId());
         }
+        game.addSpectator(event.getPlayer());
+        game.getPluginScoreBoardManager().removePlayerSideBar(event.getPlayer());
     }
 }

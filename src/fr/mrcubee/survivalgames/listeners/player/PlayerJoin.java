@@ -48,16 +48,19 @@ public class PlayerJoin implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void playerJoinEvent(PlayerJoinEvent event) {
 		Game game = this.survivalGames.getGame();
-		GameStats gameStats = game.getGameStats();
 		PlayerData playerData = game.getDataBaseManager().getPlayerData(event.getPlayer().getUniqueId());
+		Player player = event.getPlayer();
 
 		game.getPluginScoreBoardManager().getPlayerSideBar(event.getPlayer());
 		game.getPluginScoreBoardManager().getRankObjective().setScore(event.getPlayer().getName(), playerData.getRank());
-		if (gameStats == GameStats.DURING) {
+		if (game.getGameStats() == GameStats.DURING) {
 			event.setJoinMessage(null);
-			setupSpectator(event.getPlayer());
+			player.getInventory().clear();
+			game.addPlayer(player);
 		} else {
-			setupWaitingPlayer(event.getPlayer());
+			player.getInventory().clear();
+			player.getInventory().addItem(createKitItem());
+			game.addPlayer(event.getPlayer());
 			event.setJoinMessage(ChatColor.GREEN + "[+] " + event.getPlayer().getName());
 		}
 		event.getPlayer().teleport(survivalGames.getGame().getSpawn());
