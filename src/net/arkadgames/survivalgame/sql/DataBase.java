@@ -58,7 +58,7 @@ public class DataBase {
 		return this.connection;
 	}
 
-	private boolean savePlayerHead(UUID uuid) {
+	private boolean setPlayerHead(UUID uuid) {
 		BufferedImage bufferedImage;
 		ByteArrayOutputStream baos;
 		byte[] imageInByte = null;
@@ -89,7 +89,7 @@ public class DataBase {
 		return false;
 	}
 
-	private boolean savePlayerName(UUID uuid) {
+	private boolean setPlayerName(UUID uuid) {
 		Player player;
 		PreparedStatement statement;
 
@@ -111,6 +111,10 @@ public class DataBase {
 			ignored.printStackTrace();
 		}
 		return false;
+	}
+
+	public boolean setPlayerInfo(UUID uuid) {
+		return setPlayerName(uuid) && setPlayerHead(uuid);
 	}
 
 	public boolean hasPlayerData(UUID uuid) {
@@ -174,8 +178,8 @@ public class DataBase {
 
 		if (uuid == null || playerData == null || !playerData.canSaveInDB())
 			return false;
-		savePlayerName(uuid);
-		savePlayerHead(uuid);
+		setPlayerName(uuid);
+		setPlayerHead(uuid);
 		connection = getConnection();
 		if (connection == null)
 			return false;

@@ -39,12 +39,17 @@ public class PlayerQuit implements Listener {
         Game game = this.survivalGames.getGame();
         DataBaseManager dataBaseManager = game.getDataBaseManager();
 
-        event.setQuitMessage(ChatColor.RED + "[-] " + event.getPlayer().getName());
-        if (game.getGameStats().ordinal() >= 3 && !game.isSpectator(event.getPlayer()) && event.getPlayer().getHealth() > 0)
-            event.getPlayer().setHealth(0);
-        game.addSpectator(event.getPlayer());
-        game.getPluginScoreBoardManager().removePlayerSideBar(event.getPlayer());
-        updatePlayerData(game, event.getPlayer());
-        dataBaseManager.sendPlayerData(event.getPlayer().getUniqueId());
+        if (game.getGameStats().ordinal() > 2) {
+            if (!game.isSpectator(event.getPlayer()) && event.getPlayer().getHealth() > 0)
+                event.getPlayer().setHealth(0);
+            game.addSpectator(event.getPlayer());
+            game.getPluginScoreBoardManager().removePlayerSideBar(event.getPlayer());
+            updatePlayerData(game, event.getPlayer());
+            if (game.getGameStats().ordinal() < 4)
+                dataBaseManager.sendPlayerData(event.getPlayer().getUniqueId());
+        } else {
+            event.setQuitMessage(ChatColor.RED + "[-] " + event.getPlayer().getName());
+            dataBaseManager.sendPlayerInfo(event.getPlayer().getUniqueId());
+        }
     }
 }

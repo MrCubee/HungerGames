@@ -4,6 +4,7 @@ import fr.mrcubee.survivalgames.Game;
 import fr.mrcubee.survivalgames.SurvivalGames;
 import fr.mrcubee.survivalgames.api.event.GameStatsChangeEvent;
 import fr.mrcubee.survivalgames.world.BorderManager;
+import net.arkadgames.survivalgame.sql.DataBaseManager;
 import net.arkadgames.survivalgame.sql.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -50,9 +51,10 @@ public class GameStatsChange implements Listener {
 
     private void closing() {
         Server server = this.survivalGames.getServer();
+        DataBaseManager dataBaseManager = this.survivalGames.getGame().getDataBaseManager();
 
         server.getOnlinePlayers().forEach(player -> player.kickPlayer(ChatColor.GOLD + "The server will restart !"));
-        server.shutdown();
+        dataBaseManager.sendAllPLayerDataAsync();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

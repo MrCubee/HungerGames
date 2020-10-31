@@ -2,6 +2,7 @@ package fr.mrcubee.survivalgames;
 
 import fr.mrcubee.survivalgames.step.Step;
 import fr.mrcubee.survivalgames.step.StepManager;
+import net.arkadgames.survivalgame.sql.DataBaseManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -10,9 +11,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class Timer extends BukkitRunnable {
 
     private final SurvivalGames survivalGames;
+    private final Game game;
+    private final StepManager stepManager;
+    private final DataBaseManager dataBaseManager;
 
     protected Timer(SurvivalGames survivalGames) {
         this.survivalGames = survivalGames;
+        this.game = this.survivalGames.getGame();
+        this.stepManager = this.game.getStepManager();
+        this.dataBaseManager = this.game.getDataBaseManager();
     }
 
     private void playersPlaySound(Sound sound, float volume, float pitch) {
@@ -23,71 +30,67 @@ public class Timer extends BukkitRunnable {
         });
     }
 
-    public void waiting() {
-        Game game = this.survivalGames.getGame();
-
-        if (game.isForceStart() || game.getNumberPlayer() >= game.getGameSetting().getMinPlayer())
-            game.setGameStats(GameStats.STARTING);
+    private void waiting() {
+        if (this.game.isForceStart() || this.game.getNumberPlayer() >= this.game.getGameSetting().getMinPlayer())
+            this.game.setGameStats(GameStats.STARTING);
     }
 
-    public void starting() {
-        Game game = this.survivalGames.getGame();
+    private void starting() {
         long seconds;
 
-        if (!game.isForceStart() && game.getNumberPlayer() < game.getGameSetting().getMinPlayer()) {
-            game.setGameStats(GameStats.WAITING);
+        if (!this.game.isForceStart() && this.game.getNumberPlayer() < this.game.getGameSetting().getMinPlayer()) {
+            this.game.setGameStats(GameStats.WAITING);
             return;
         }
-        seconds = (game.getNextStatTime() - System.currentTimeMillis()) / 1000;
+        seconds = (this.game.getNextStatTime() - System.currentTimeMillis()) / 1000;
         if (seconds <= 0) {
             playersPlaySound(Sound.ORB_PICKUP, 100, 2);
-            game.setGameStats(GameStats.DURING);
+            this.game.setGameStats(GameStats.DURING);
         } else if (seconds == 10 || seconds <= 5) {
             playersPlaySound(Sound.ORB_PICKUP, 100, 1);
-            game.broadcastMessage(ChatColor.GOLD + "The game starts in " + ChatColor.RED + seconds + " second" + ((seconds > 1) ? "s" : ""));
+            this.game.broadcastMessage(ChatColor.GOLD + "The game starts in " + ChatColor.RED + seconds + " second" + ((seconds > 1) ? "s" : ""));
         }
     }
 
-    public void during() {
-        Game game = this.survivalGames.getGame();
-        StepManager stepManager = game.getStepManager();
-        Step step = stepManager.getCurrentStep();
+    private void during() {
+        Step step = this.stepManager.getCurrentStep();
 
         if (step != null) {
             step.update();
             if (step.getEndSeconds() == 0)
-                stepManager.nextStep();
+                this.stepManager.nextStep();
         }
-        if (game.getNumberPlayer() <= 1)
-            game.setGameStats(GameStats.STOPPING);
+        if (this.game.getNumberPlayer() <= 1)
+            this.game.setGameStats(GameStats.STOPPING);
     }
 
-    public void stopping() {
-        Game game = this.survivalGames.getGame();
+    private void stopping() {
         long seconds;
 
         if (this.survivalGames.getServer().getOnlinePlayers().isEmpty()) {
-            this.survivalGames.getGame().setGameStats(GameStats.CLOSING);
+            this.game.setGameStats(GameStats.CLOSING);
             return;
         }
-        seconds = (game.getNextStatTime() - System.currentTimeMillis()) / 1000;
+        seconds = (this.game.getNextStatTime() - System.currentTimeMillis()) / 1000;
         if (seconds <= 0)
-            this.survivalGames.getGame().setGameStats(GameStats.CLOSING);
+            this.game.setGameStats(GameStats.CLOSING);
         else if (seconds == 10 || seconds <= 5) {
             playersPlaySound(Sound.ORB_PICKUP, 100, 1);
-            game.broadcastMessage(ChatColor.GOLD + "Restart the server in " + ChatColor.RED + seconds + " second" + ((seconds > 1) ? "s" : ""));
+            this.game.broadcastMessage(ChatColor.GOLD + "Restart the server in " + ChatColor.RED + seconds + " second" + ((seconds > 1) ? "s" : ""));
         }
     }
 
     @Override
     public void run() {
-        World world;
+        World world = this.game.getGameWorld();
         GameStats gameStats;
 
-        if (survivalGames.getGame() == null || (world = survivalGames.getGame().getGameWorld()) == null
-            || (gameStats = survivalGames.getGame().getGameStats()) == GameStats.CLOSING) {
-            survivalGames.getGame().setGameStats(GameStats.CLOSING);
-            this.cancel();
+        if ((gameStats = this.game.getGameStats()) == GameStats.CLOSING) {
+            this.game.setGameStats(GameStats.CLOSING);
+            if (this.dataBaseManager.isEmpty()) {
+                this.survivalGames.getServer().shutdown();
+                cancel();
+            }
             return;
         }
         if (world.isThundering() || world.hasStorm()) {
