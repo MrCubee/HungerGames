@@ -1,5 +1,6 @@
 package fr.mrcubee.survivalgames.listeners.player;
 
+import fr.mrcubee.survivalgames.Game;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,11 +24,11 @@ public class PlayerInteract implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void playerInteractEvent(PlayerInteractEvent event) {
-		GameStats gameStats = survivalGames.getGame().getGameStats();
+		Game game = this.survivalGames.getGame();
+		GameStats gameStats = game.getGameStats();
 
-		if ((!event.getAction().equals(Action.RIGHT_CLICK_AIR)) && (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
-			return;
-		if (event.getItem() == null)
+		if ((!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+		|| event.getItem() == null)
 			return;
 		if ((gameStats == GameStats.WAITING) || (gameStats == GameStats.STARTING)) {
 			Inventory inventory = KitMenu.getInventory(0);
@@ -35,7 +36,7 @@ public class PlayerInteract implements Listener {
 				event.getPlayer().openInventory(inventory);
 			return;
 		}
-		if ((gameStats != GameStats.DURING) || (!event.getItem().getType().equals(Material.COMPASS)))
+		if (gameStats != GameStats.DURING || !event.getItem().isSimilar(game.getKitManager().getRadarItem()))
 			return;
 		event.setCancelled(true);
 		PlayerRadar.radar(survivalGames.getGame(), event.getPlayer());

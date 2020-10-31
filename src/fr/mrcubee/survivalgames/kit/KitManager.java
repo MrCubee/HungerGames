@@ -1,125 +1,165 @@
 package fr.mrcubee.survivalgames.kit;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
+import fr.mrcubee.survivalgames.Game;
+import fr.mrcubee.survivalgames.GameStats;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-
-import fr.mrcubee.survivalgames.GameStats;
 import fr.mrcubee.survivalgames.SurvivalGames;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 public class KitManager implements CommandExecutor {
-	
-	private SurvivalGames survivalGames;
-	private List<Kit>     kits;
-	
-	public KitManager(SurvivalGames survivalGames) {
-		this.survivalGames = survivalGames;
-		this.kits = new ArrayList<Kit>();
-	}
-	
-	public void registerKit(Kit kit) {
-		if ((kit == null) || (kit.getName() == null) || (kit.getName().length() < 1) || (getKitByName(kit.getName()) != null) || (kit.getItemStack() == null) || kits.contains(kit))
-			return;
-		kits.add(kit);
-		survivalGames.getServer().getPluginManager().registerEvents(kit, survivalGames);
-	}
-	
-	public boolean hasKit(Player player) {
-		if (player == null)
-			return false;
-		for (Kit kit : kits)
-			if (kit.containsPlayer(player))
-				return true;
-		return false;
-	}
-	
-	public void removeKit(Player player) {
-		if (player == null)
-			return;
-		for (Kit kit : kits)
-			kit.removePlayer(player);
-	}
-	
-	public String[] getKitsNames() {
-		String[] names = new String[kits.size()];
-		for (int i = 0; i < kits.size(); i++)
-			names[i] = kits.get(i).getName();
-		return names;
-	}
-	
-	public Kit getKitByName(String name) {
-		if ((name == null) || (name.length() < 1))
-			return null;
-		for (Kit kit : kits)
-			if (kit.getName().equals(name))
-				return kit;
-		return null;
-	}
-	
-	public Kit getKitByPlayer(Player player) {
-		if (player == null)
-			return null;
-		for (Kit kit : kits)
-			if (kit.containsPlayer(player))
-				return kit;
-		return null;
-	}
-	
-	public void giveKitToPlayer() {
-		for (Kit kit : kits)
-			kit.givePlayersKit();
-	}
-	
-	public void removeKitToPlayer() {
-		for (Kit kit : kits)
-			kit.removePlayersKit();
-	}
-	
-	public Kit randomKit(Player player) {
-		Kit result = null;
-		
-		if (kits.size() < 0)
-			return null;
-		while (result == null || (!result.canPlayerTakeKit(player)))
-			result = kits.get(new Random().nextInt(kits.size()));
-		return result;
-	}
-	
-	public void randomKitPlayerWithNotKit() {
-		Kit kit;
 
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (getKitByPlayer(player) == null) {
-				if ((kit = randomKit(player)) != null) {
-					kit.addPlayer(player);
-					player.sendMessage(ChatColor.GOLD + "You force took the "+ ChatColor.RED + kit.getName() + ChatColor.GOLD + " kit.");
-				}
-			}
-		}
-	}
+    private static BukkitTask bukkitTask;
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		Kit kit;
-		Player target;
-		
-		if (sender.isOp() && args != null && args.length > 1 &&  args[0].equalsIgnoreCase("view")) {
-			target = Bukkit.getPlayer(args[1]);
-			if (target == null)
-				sender.sendMessage(ChatColor.RED + "Player do not exist !");
-			else
-				sender.sendMessage(ChatColor.GOLD + "Kit: " + ChatColor.RESET + (((kit = getKitByPlayer(target)) == null) ? "No Kit" : kit.getName()));
-		}
-		return true;
-	}
+    private final SurvivalGames survivalGames;
+    private final Set<Kit> kits;
+    private final ItemStack radarItem;
+
+    public KitManager(SurvivalGames survivalGames) {
+        ItemMeta radarItemMeta;
+
+        this.survivalGames = survivalGames;
+        this.kits = new HashSet<Kit>();
+        this.radarItem = new ItemStack(Material.COMPASS);
+        radarItemMeta = this.radarItem.getItemMeta();
+        radarItemMeta.setDisplayName(ChatColor.RED + "RADAR");
+        radarItemMeta.setLore(null);
+        this.radarItem.setItemMeta(radarItemMeta);
+    }
+
+    public void createKitUpdater() {
+        Game game = this.survivalGames.getGame();
+
+        if (game == null)
+            return;
+        if (KitManager.bukkitTask != null)
+            KitManager.bukkitTask.cancel();
+        KitManager.bukkitTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (game.getGameStats() == GameStats.DURING)
+                    kits.forEach(Kit::update);
+            }
+        }.runTaskTimer(survivalGames, 0, 10L);
+    }
+
+    public boolean registerKit(Kit kit) {
+        if (kit == null || StringUtils.isWhitespace(kit.getName()) || kit.getItemStack() == null)
+            return false;
+        return this.kits.add(kit);
+    }
+
+    public boolean hasKit(Player player) {
+        if (player == null)
+            return false;
+        for (Kit kit : kits)
+            if (kit.containsPlayer(player))
+                return true;
+        return false;
+    }
+
+    public void removeKit(Player player) {
+        if (player == null)
+            return;
+        for (Kit kit : kits)
+            kit.removePlayer(player);
+    }
+
+    public boolean canLostItem(Player player, ItemStack itemStack) {
+        Kit[] kits;
+
+        if (player == null || itemStack == null)
+            return true;
+        if (itemStack.isSimilar(this.radarItem))
+            return false;
+        kits = getKitByPlayer(player);
+        if (kits == null)
+            return true;
+        for (Kit kit : kits)
+            if (!kit.canLostItem(itemStack))
+                return false;
+        return true;
+    }
+
+
+    public String[] getKitsNames() {
+        String[] names = new String[this.kits.size()];
+        int index = 0;
+
+        for (Kit kit : this.kits)
+            names[index++] = kit.getName();
+        return names;
+    }
+
+    public Kit getKitByName(String name) {
+        if (name == null || StringUtils.isWhitespace(name))
+            return null;
+        for (Kit kit : kits)
+            if (kit.getName().equals(name))
+                return kit;
+        return null;
+    }
+
+    public Kit[] getKitByPlayer(Player player) {
+        LinkedList<Kit> result;
+
+        if (player == null)
+            return null;
+        result = new LinkedList<Kit>();
+        for (Kit kit : kits)
+            if (kit.containsPlayer(player))
+                result.add(kit);
+        if (result.size() <= 0)
+            return null;
+        return result.toArray(new Kit[0]);
+    }
+
+    public void giveKitToPlayer() {
+        this.survivalGames.getGame().getPlayerInGame().forEach(player -> {
+            player.getInventory().addItem(this.radarItem);
+        });
+        for (Kit kit : kits)
+            kit.givePlayersKit();
+    }
+
+    public void removeKitToPlayer() {
+        this.survivalGames.getGame().getPlayerInGame().forEach(player -> {
+            player.getInventory().removeItem(this.radarItem);
+        });
+        for (Kit kit : kits)
+            kit.removePlayersKit();
+    }
+
+    public ItemStack getRadarItem() {
+        return this.radarItem.clone();
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        Kit[] kits;
+        Player target;
+
+        if (sender.isOp() && args != null && args.length > 1 && args[0].equalsIgnoreCase("view")) {
+            target = Bukkit.getPlayer(args[1]);
+            if (target == null)
+                sender.sendMessage(ChatColor.RED + "Player do not exist !");
+            else {
+                kits = getKitByPlayer(target);
+                sender.sendMessage(ChatColor.GOLD + "Kit: " + ChatColor.RESET + (((kits == null || kits.length < 1) ? "No Kit" : kits[0].getName())));
+            }
+        }
+        return true;
+    }
 
 }

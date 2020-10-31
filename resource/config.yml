@@ -18,5 +18,10 @@ game:
   step:
     pvpTime: 300
     feast:
-      beforeTime: 1200
-      spawnTime: 600
+      beforeTime: 600
+      spawnTime: 300
+db:
+  host: db.mrcubee.fr
+  database: survivalgames
+  user: user
+  password: password

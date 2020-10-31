@@ -1,16 +1,13 @@
 package fr.mrcubee.survivalgames.listeners.game;
 
 import fr.mrcubee.survivalgames.Game;
-import fr.mrcubee.survivalgames.GameStats;
 import fr.mrcubee.survivalgames.SurvivalGames;
 import fr.mrcubee.survivalgames.api.event.GameStatsChangeEvent;
 import fr.mrcubee.survivalgames.world.BorderManager;
-import net.arkadgames.survivalgame.sql.DataBase;
 import net.arkadgames.survivalgame.sql.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Server;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,21 +22,6 @@ public class GameStatsChange implements Listener {
         this.survivalGames = survivalGames;
     }
 
-    private void updatePlayerStats() {
-        DataBase dataBase = this.survivalGames.getDataBase();
-        PlayerData playerData;
-
-        if (dataBase == null || this.survivalGames.getGame().getGameStats() != GameStats.DURING)
-            return;
-        for (Player player : survivalGames.getGame().getPlayerInGame()) {
-            playerData = dataBase.getPlayerData(player.getUniqueId());
-            if (playerData == null)
-                playerData = new PlayerData();
-            playerData.play++;
-            //survivalGames.getDataBase().setPlayerData(player.getUniqueId(), playerData);
-        }
-    }
-
     private void waiting() {
         Game game = this.survivalGames.getGame();
 
@@ -50,18 +32,18 @@ public class GameStatsChange implements Listener {
     private void during() {
         Game game = this.survivalGames.getGame();
 
-        game.setGameEndTime(System.currentTimeMillis() + (game.getGameSetting().getTimeBorder() + 20) * 1000);
-        game.setTotalPlayers(this.survivalGames.getGame().getNumberPlayer());
         this.survivalGames.getServer().getOnlinePlayers().forEach(player -> {
+            PlayerData playerData = this.survivalGames.getGame().getDataBaseManager().getPlayerData(player.getUniqueId());
+
+            if (playerData != null)
+                playerData.setPlay(playerData.getPlay() + 1);
             player.getInventory().clear();
             player.setVelocity(new Vector(0, 0, 0));
             player.setFireTicks(0);
             player.teleport(this.survivalGames.getGame().getSpawn());
             player.setHealth(player.getMaxHealth());
-            player.getInventory().addItem(new ItemStack(Material.COMPASS));
             player.getInventory().addItem(new ItemStack(Material.APPLE, 10));
         });
-        game.getKitManager().randomKitPlayerWithNotKit();
         game.getKitManager().giveKitToPlayer();
         BorderManager.setWorldBorder(game.getGameWorld(), game.getGameSetting().getMinBorder(), game.getGameSetting().getTimeBorder());
     }
@@ -75,7 +57,6 @@ public class GameStatsChange implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void gameStatsChange(GameStatsChangeEvent event) {
-        updatePlayerStats();
         switch (event.getGameStats()) {
             case WAITING:
                 waiting();

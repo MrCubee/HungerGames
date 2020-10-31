@@ -1,93 +1,87 @@
 package fr.mrcubee.survivalgames.kit;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
-public class Kit implements Listener {
-	private String       name;
-	private String       description;
-	private ItemStack    itemStack;
-	private List<Player> players;
+public abstract class Kit implements Listener {
 
-	public Kit(String name, String description, ItemStack itemStack) {
-		this.name = name;
-		this.description = description;
-		this.itemStack = itemStack;
-		this.players = new ArrayList<Player>();
-	}
+    private final String name;
+    private final String description;
+    private final ItemStack itemStack;
+    private final Set<Player> players;
 
-	public void addPlayer(Player player) {
-		if ((player == null) || (!player.isOnline()) || (this.players.contains(player)))
-			return;
-		this.players.add(player);
-	}
+    protected Kit(String name, String description, ItemStack itemStack) {
+        this.name = name;
+        this.description = description;
+        this.itemStack = itemStack;
+        this.players = new HashSet<Player>();
+    }
 
-	public void removePlayer(Player player) {
-		if ((player == null) || (!this.players.contains(player)))
-			return;
-		this.players.remove(player);
-	}
+    public void addPlayer(Player player) {
+        if (player == null || !player.isOnline() || !canTakeKit(player))
+            return;
+        this.players.add(player);
+    }
 
-	public boolean containsPlayer(Player player) {
-		if (player == null)
-			return false;
-		return this.players.contains(player);
-	}
+    public void removePlayer(Player player) {
+        if ((player == null) || (!this.players.contains(player)))
+            return;
+        this.players.remove(player);
+    }
 
-	protected void givePlayersKit() {
-		for (Player player : this.players)
-			if (player != null)
-				givePlayerKit(player);
-	}
+    public boolean containsPlayer(Player player) {
+        if (player == null)
+            return false;
+        return this.players.contains(player);
+    }
 
-	public boolean canPlayerTakeKit(Player player) {
-		return true;
-	}
+    protected void givePlayersKit() {
+        for (Player player : this.players)
+            if (player != null)
+                givePlayerKit(player);
+    }
 
-	protected void postGivePlayersKit(Player player) {
-		if ((player != null) && (this.players.contains(player)))
-			givePlayerKit(player);
-	}
+    public abstract boolean canTakeKit(Player player);
 
-	public void givePlayerKit(Player player) {
-		
-	}
+    public abstract void givePlayerKit(Player player);
 
-	protected void removePlayersKit() {
-		for (Player player : this.players)
-			if ((player != null) && (player.isOnline()))
-				removePlayerKit(player);
-	}
+    protected void removePlayersKit() {
+        for (Player player : this.players)
+            if ((player != null) && (player.isOnline()))
+                removePlayerKit(player);
+    }
 
-	protected void postRemovePlayersKit(Player player) {
-		if ((player != null) && (this.players.contains(player)))
-			removePlayerKit(player);
-	}
+    public abstract void removePlayerKit(Player player);
 
-	public void removePlayerKit(Player player) {
-	}
+    public abstract boolean canLostItem(ItemStack itemStack);
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public String getDescription() {
-		return this.description;
-	}
+    public String getDescription() {
+        return this.description;
+    }
 
-	public ItemStack getItemStack() {
-		return this.itemStack.clone();
-	}
+    public ItemStack getItemStack() {
+        return this.itemStack.clone();
+    }
 
-	public List<Player> getPlayers() {
-		List<Player> copy = new ArrayList(this.players.size());
-		try {
-			Collections.copy(copy, this.players);
-		} catch (Exception localException) {}
-		return this.players;
-	}
+    public Set<Player> getPlayers() {
+        return new HashSet<Player>(this.players);
+    }
+
+    public int getNumberPlayer() {
+        return this.players.size();
+    }
+
+    public abstract void update();
+
+    @Override
+    public int hashCode() {
+        return ((this.name == null) ? 0 : this.name.hashCode());
+    }
 }

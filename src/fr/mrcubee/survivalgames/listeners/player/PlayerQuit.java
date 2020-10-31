@@ -1,66 +1,50 @@
 package fr.mrcubee.survivalgames.listeners.player;
 
-import java.util.Set;
-
+import fr.mrcubee.scoreboard.Score;
+import fr.mrcubee.survivalgames.Game;
+import net.arkadgames.survivalgame.sql.DataBaseManager;
+import net.arkadgames.survivalgame.sql.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import fr.mrcubee.survivalgames.GameStats;
 import fr.mrcubee.survivalgames.SurvivalGames;
-import fr.mrcubee.survivalgames.kit.Kit;
 
 public class PlayerQuit implements Listener {
-	
-	private SurvivalGames survivalGames;
-	
-	public PlayerQuit(SurvivalGames survivalGames) {
-		this.survivalGames = survivalGames;
-	}
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void playerQuitEvent(PlayerQuitEvent event) {
-		GameStats gameStats = this.survivalGames.getGame().getGameStats();
-		Set<Player> playerInGame;
-		Kit kit;
-		String kitName;
 
-		if (this.survivalGames.getGame().isSpectator(event.getPlayer()))
-			return;
-		this.survivalGames.getGame().addSpectator(event.getPlayer());
-		this.survivalGames.getGame().getPluginScoreBoardManager().removePlayerSideBar(event.getPlayer());
-		if (gameStats != GameStats.DURING) {
-			event.setQuitMessage(ChatColor.RED + "[-] " + event.getPlayer().getName());
-			return;
-		}
-		event.setQuitMessage(null);
-		kit = survivalGames.getGame().getKitManager().getKitByPlayer(event.getPlayer());
-		kitName = (kit == null) ? "No Kit" : kit.getName();
-		//survivalGames.getDataBase().updatefinishPlayerData(event.getPlayer(), false);
-		playerInGame = survivalGames.getGame().getPlayerInGame();
-		playerInGame.remove(event.getPlayer());
-		int players = playerInGame.size();
-		if (players > 1) {
-			survivalGames.getServer().broadcastMessage(ChatColor.RED + event.getPlayer().getName() + " (" + ChatColor.GRAY + kitName + ChatColor.RED + ")" + ChatColor.GOLD + " is Dead ! There are " + ChatColor.RED + players + " players left.");
-			try {
-				for (Player player : Bukkit.getOnlinePlayers())
-					player.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 100, 1);
-			} catch (Exception e) {}
-		}else {
-			try {
-				for (Player player : Bukkit.getOnlinePlayers())
-					player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 100, 1);
-			} catch (Exception e) {}
-			survivalGames.getServer().broadcastMessage(ChatColor.RED + event.getPlayer().getName() + " (" + ChatColor.GRAY + kitName + ChatColor.RED + ")" + ChatColor.GOLD + " is Dead ! ");
-			for (Player player : playerInGame) {
-				//survivalGames.getDataBase().updatefinishPlayerData(player, true);
-				survivalGames.getServer().broadcastMessage(ChatColor.GOLD + "---> " + ChatColor.RED + player.getName() + ChatColor.GOLD + " win the game. <---");
-			}
-		}
-		survivalGames.getGame().getKitManager().removeKit(event.getPlayer());
-	}
+    private final SurvivalGames survivalGames;
+
+    public PlayerQuit(SurvivalGames survivalGames) {
+        this.survivalGames = survivalGames;
+    }
+
+    private void updatePlayerData(Game game, Player player) {
+        PlayerData playerData;
+        Score killScore;
+
+        if (game == null || player == null)
+            return;
+        killScore = game.getPluginScoreBoardManager().getKillObjective().getScore(player.getName());
+        playerData = game.getDataBaseManager().getPlayerData(player.getUniqueId());
+        if (playerData != null)
+            playerData.setKill(playerData.getKill() + ((killScore == null) ? 0 : killScore.getScore()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerQuitEvent(PlayerQuitEvent event) {
+        Game game = this.survivalGames.getGame();
+        DataBaseManager dataBaseManager = game.getDataBaseManager();
+
+        event.setQuitMessage(ChatColor.RED + "[-] " + event.getPlayer().getName());
+        if (game.getGameStats().ordinal() >= 3 && !game.isSpectator(event.getPlayer()) && event.getPlayer().getHealth() > 0)
+            event.getPlayer().setHealth(0);
+        game.addSpectator(event.getPlayer());
+        game.getPluginScoreBoardManager().removePlayerSideBar(event.getPlayer());
+        updatePlayerData(game, event.getPlayer());
+        dataBaseManager.sendPlayerData(event.getPlayer().getUniqueId());
+    }
 }

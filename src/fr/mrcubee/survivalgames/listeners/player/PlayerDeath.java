@@ -1,8 +1,11 @@
 package fr.mrcubee.survivalgames.listeners.player;
 
-import java.util.List;
 import java.util.Set;
 
+import fr.mrcubee.scoreboard.Score;
+import fr.mrcubee.survivalgames.Game;
+import fr.mrcubee.survivalgames.kit.KitManager;
+import net.arkadgames.survivalgame.sql.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -24,39 +27,83 @@ public class PlayerDeath implements Listener {
         this.survivalGames = survivalGames;
     }
 
-    private void sendDeathMessage(Player deathPlayer) {
-        Kit kit = survivalGames.getGame().getKitManager().getKitByPlayer(deathPlayer);
-        String kitName = "No Kit";
-        int players = survivalGames.getServer().getOnlinePlayers().size() - survivalGames.getGame().getNumberSpectator();
-        Set<Player> playerInGame = survivalGames.getGame().getPlayerInGame();
+    private String getKitsName(KitManager kitManager, Player player) {
+        Kit[] kits;
+        StringBuilder stringBuilder;
 
-        if (kit != null)
-            kitName = kit.getName();
-        if (players > 1) {
-            survivalGames.getServer().broadcastMessage(ChatColor.RED + deathPlayer.getName() + " (" + ChatColor.GRAY + kitName + ChatColor.RED + ")" + ChatColor.GOLD + " is Dead ! There are " + ChatColor.RED + players + " players left.");
-            for (Player player : Bukkit.getOnlinePlayers())
-                player.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 100, 1);
-        } else {
-            for (Player player : Bukkit.getOnlinePlayers())
-                player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 100, 1);
-            survivalGames.getServer().broadcastMessage(ChatColor.RED + deathPlayer.getName() + " (" + ChatColor.GRAY + kitName + ChatColor.RED + ")" + ChatColor.GOLD + " is Dead ! ");
-            for (Player player : playerInGame) {
-                //survivalGames.getDataBase().updatefinishPlayerData(player, true);
-                survivalGames.getServer().broadcastMessage(ChatColor.GOLD + "---> " + ChatColor.RED + player.getName() + ChatColor.GOLD + " win the game. <---");
-            }
+        if (kitManager == null || player == null)
+            return null;
+        kits = kitManager.getKitByPlayer(player);
+        if (kits == null || kits.length <= 0)
+            return "no kit";
+        stringBuilder = new StringBuilder();
+        stringBuilder.append(kits[0].getName());
+        for (int i = 1; i < kits.length; i++) {
+            stringBuilder.append(ChatColor.GRAY.toString());
+            stringBuilder.append(", ");
+            stringBuilder.append(kits[i].toString());
         }
+        return stringBuilder.toString();
+    }
+
+    private void victory(Game game) {
+        Set<Player> players;
+
+        if (game == null)
+            return;
+        players = game.getPlayerInGame();
+        if (players == null || players.isEmpty())
+            return;
+        for (Player player : Bukkit.getOnlinePlayers())
+            player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 100, 1);
+        players.forEach(player -> {
+            PlayerData playerData = game.getDataBaseManager().getPlayerData(player.getUniqueId());
+
+            if (playerData != null) {
+                playerData.setLastWin(true);
+                playerData.setWin(playerData.getWin() + 1);
+                playerData.setPlayTime(playerData.getPlayTime() + ((System.currentTimeMillis() - game.getGameStartTime()) / 1000));
+            }
+            game.broadcastMessage(ChatColor.RED + player.getName() + ChatColor.GOLD + " WIN THE GAME !!!");
+        });
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeathEvent(PlayerDeathEvent event) {
-        if (survivalGames.getGame().getGameStats() != GameStats.DURING)
+        Game game = this.survivalGames.getGame();
+        KitManager kitManager;
+        String kitsName;
+        PlayerData playerData;
+        Score score;
+
+        if (game.getGameStats() != GameStats.DURING)
             return;
-        //survivalGames.getDataBase().updatefinishPlayerData(event.getEntity(), false);
+        if (event.getEntity().getKiller() != null) {
+            score = game.getPluginScoreBoardManager().getKillObjective().getScore(event.getEntity().getKiller().getName());
+            game.getPluginScoreBoardManager().getKillObjective().setScore(event.getEntity().getKiller().getName(),
+            (score == null) ? 1 : score.getScore() + 1);
+        }
+        kitManager = game.getKitManager();
+        kitsName = getKitsName(kitManager, event.getEntity());
+        playerData = game.getDataBaseManager().getPlayerData(event.getEntity().getUniqueId());
+        if (playerData != null) {
+            playerData.setLastWin(false);
+            playerData.setPlayTime(playerData.getPlayTime() + ((System.currentTimeMillis() - game.getGameStartTime()) / 1000));
+        }
+        event.getDrops().removeIf(itemStack -> !kitManager.canLostItem(event.getEntity(), itemStack));
         event.setDeathMessage(null);
         event.getEntity().setMaxHealth(20);
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
-        survivalGames.getGame().addSpectator(event.getEntity());
-        sendDeathMessage(event.getEntity());
-        survivalGames.getGame().getKitManager().removeKit(event.getEntity());
+        game.addSpectator(event.getEntity());
+        if (game.getNumberPlayer() > 1) {
+            for (Player player : Bukkit.getOnlinePlayers())
+                player.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 100, 1);
+            event.setDeathMessage(ChatColor.RED + event.getEntity().getName() + " (" + ChatColor.GRAY + kitsName
+            + ChatColor.RED + ")" + ChatColor.GOLD + " is Dead ! There are " + ChatColor.RED + game.getNumberPlayer() + " players left.");
+        } else {
+            event.setDeathMessage(ChatColor.RED + event.getEntity().getName() + " (" + ChatColor.GRAY + kitsName + ChatColor.RED + ")" + ChatColor.GOLD + " is Dead ! ");
+            victory(game);
+        }
+        game.getKitManager().removeKit(event.getEntity());
     }
 }

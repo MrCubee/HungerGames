@@ -12,7 +12,6 @@ public class StepManager {
     private final List<Step> gameSteps;
     private int currentStep;
 
-
     public StepManager(Game game) {
         this.game = game;
         this.gameSteps = new ArrayList<Step>();
@@ -22,7 +21,6 @@ public class StepManager {
     public boolean registerStep(Step step) {
         if (step == null || this.gameSteps.contains(step))
             return false;
-        PluginAnnotations.load(this.game.getPlugin(), step);
         this.gameSteps.add(step);
         return true;
     }

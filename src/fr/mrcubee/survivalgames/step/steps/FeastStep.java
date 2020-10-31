@@ -1,5 +1,6 @@
 package fr.mrcubee.survivalgames.step.steps;
 
+import fr.mrcubee.pluginutil.spigot.annotations.PluginAnnotations;
 import fr.mrcubee.pluginutil.spigot.annotations.config.Config;
 import fr.mrcubee.survivalgames.Game;
 import fr.mrcubee.survivalgames.step.Step;
@@ -19,6 +20,7 @@ public class FeastStep extends Step {
 
     private FeastStep(Game game) {
         super(game, "feast");
+        PluginAnnotations.load(game.getPlugin(), this);
         setSecondDuring(this.spawnTime);
     }
 
@@ -65,14 +67,14 @@ public class FeastStep extends Step {
         return new ItemStack(selectedMaterial, random.nextInt(selectedMaterial.getMaxStackSize()) + 1);
     }
 
-    private void createFilledChest(Block block) {
-        Random random;
+    private void createFilledChest(Block block, Random random) {
         int items;
         Chest chest;
 
         if (block == null)
             return;
-        random = new Random(System.currentTimeMillis());
+        if (random == null)
+            random = new Random(System.currentTimeMillis());
         items = random.nextInt(27) + 1;
         block.setType(Material.CHEST);
         chest = (Chest) block.getState();
@@ -83,19 +85,20 @@ public class FeastStep extends Step {
 
     @Override
     public void complete() {
+        Random random = new Random(System.currentTimeMillis());
         Location spawn;
 
         super.complete();
         spawn = getGame().getSpawn();
         spawn.getBlock().setType(Material.ENCHANTMENT_TABLE);
-        createFilledChest(spawn.subtract(2, 0, 2).getBlock());
-        createFilledChest(spawn.add(2, 0, 0).getBlock());
-        createFilledChest(spawn.add(2, 0, 0).getBlock());
-        createFilledChest(spawn.add(0, 0, 2).getBlock());
-        createFilledChest(spawn.add(0, 0, 2).getBlock());
-        createFilledChest(spawn.subtract(2, 0, 0).getBlock());
-        createFilledChest(spawn.subtract(2, 0, 0).getBlock());
-        createFilledChest(spawn.subtract(0, 0, 2).getBlock());
+        createFilledChest(spawn.subtract(2, 0, 2).getBlock(), random);
+        createFilledChest(spawn.add(2, 0, 0).getBlock(), random);
+        createFilledChest(spawn.add(2, 0, 0).getBlock(), random);
+        createFilledChest(spawn.add(0, 0, 2).getBlock(), random);
+        createFilledChest(spawn.add(0, 0, 2).getBlock(), random);
+        createFilledChest(spawn.subtract(2, 0, 0).getBlock(), random);
+        createFilledChest(spawn.subtract(2, 0, 0).getBlock(), random);
+        createFilledChest(spawn.subtract(0, 0, 2).getBlock(), random);
     }
 
     @Override

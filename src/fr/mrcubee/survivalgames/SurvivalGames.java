@@ -7,18 +7,17 @@ import fr.mrcubee.survivalgames.step.steps.GameStep;
 import fr.mrcubee.survivalgames.step.steps.PvpStep;
 import fr.mrcubee.util.FileUtil;
 import fr.mrcubee.world.WorldSpawnSetup;
-import net.arkadgames.survivalgame.sql.DataBase;
 
 import java.io.File;
 
+import net.arkadgames.survivalgame.sql.DataBaseManager;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SurvivalGames extends JavaPlugin {
-	
-	private DataBase dataBase;
+
 	private Game game;
 	private Timer timer;
 
@@ -87,8 +86,8 @@ public class SurvivalGames extends JavaPlugin {
 		return true;
 	}
 	
-	public DataBase getDataBase() {
-		return dataBase;
+	public DataBaseManager getDataBaseManager() {
+		return this.game.getDataBaseManager();
 	}
 
 	public Game getGame() {

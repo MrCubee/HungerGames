@@ -1,5 +1,6 @@
 package fr.mrcubee.survivalgames.listeners.player;
 
+import fr.mrcubee.survivalgames.kit.KitManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,9 +19,12 @@ public class PlayerDropItem implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void playerDropItemEvent(PlayerDropItemEvent event) {
+		KitManager kitManager = survivalGames.getGame().getKitManager();
 		GameStats gameStats = survivalGames.getGame().getGameStats();
+
 		if (gameStats != GameStats.DURING) {
 			event.setCancelled(true);
-		}
+		} else if (!kitManager.canLostItem(event.getPlayer(), event.getItemDrop().getItemStack()))
+			event.setCancelled(true);
 	}
 }

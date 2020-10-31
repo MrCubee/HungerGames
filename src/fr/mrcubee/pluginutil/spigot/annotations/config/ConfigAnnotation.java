@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.scheduler.BukkitTask;
 
 public class ConfigAnnotation {
 
@@ -15,7 +14,7 @@ public class ConfigAnnotation {
 		ERROR,
 	};
 
-	private static void configLog(Field field, Config configValue, ConfigLogType type) {
+	private static void configLog(Field field, Config configValue, Object value, ConfigLogType type) {
 		String message;
 
 		if (field == null || configValue == null || type == null)
@@ -33,7 +32,7 @@ public class ConfigAnnotation {
 				break;
 		}
 		message += "CLASS: " + field.getDeclaringClass().getName() + " FIELD: " + field.getName()
-				+ " CONFIG_PATH: " + configValue.path();
+				+ " CONFIG_PATH: " + configValue.path() + " VALUE: " + ((value == null) ? "NULL" : value.toString());
 		switch (type) {
 			case LOADED:
 				Bukkit.getLogger().info(message);
@@ -53,7 +52,7 @@ public class ConfigAnnotation {
 		if (config == null  || object == null || field == null || configValue == null)
 			return;
 		if (!config.contains(configValue.path())) {
-			configLog(field, configValue, ConfigLogType.NO_FOUND);
+			configLog(field, configValue, null, ConfigLogType.NO_FOUND);
 			return;
 		}
 		field.setAccessible(true);
@@ -63,9 +62,9 @@ public class ConfigAnnotation {
 		try {
 			if (value != null)
 				field.set(object, value);
-			configLog(field, configValue, ConfigLogType.LOADED);
+			configLog(field, configValue, value, ConfigLogType.LOADED);
 		} catch (Exception ignored) {
-			configLog(field, configValue, ConfigLogType.ERROR);
+			configLog(field, configValue, value, ConfigLogType.ERROR);
 		}
 	}
 

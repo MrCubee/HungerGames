@@ -9,6 +9,7 @@ import java.util.*;
 
 import fr.mrcubee.survivalgames.step.StepManager;
 import fr.mrcubee.world.SpawnTerrainForming;
+import net.arkadgames.survivalgame.sql.DataBaseManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -25,9 +26,10 @@ import org.bukkit.entity.Player;
  */
 public class Game {
     private final SurvivalGames survivalGames;
+    private final GameSetting gameSetting;
+    private final DataBaseManager dataBaseManager;
     private final KitManager kitManager;
     private final StepManager stepManager;
-    private final GameSetting gameSetting;
     private PluginScoreBoardManager pluginScoreBoardManager;
     private World gameWorld;
     private SpawnTerrainForming spawnTerrainForming;
@@ -37,6 +39,7 @@ public class Game {
     private boolean forcePvp;
     private int totalPlayers;
     private boolean pvpEnable;
+    private long gameStartTime;
     private long gameEndTime;
     private HashSet<Player> players;
 
@@ -51,15 +54,16 @@ public class Game {
      */
     protected Game(SurvivalGames survivalGames) {
         this.survivalGames = survivalGames;
+        this.gameSetting = new GameSetting();
+        PluginAnnotations.load(survivalGames, this.gameSetting);
+        this.dataBaseManager = new DataBaseManager(survivalGames);
         this.kitManager = new KitManager(survivalGames);
         this.stepManager = new StepManager(this);
+        this.pluginScoreBoardManager = new PluginScoreBoardManager(this);
         this.gameStats = GameStats.OPENING;
-        this.gameSetting = new GameSetting();
         this.players = new HashSet<Player>();
         this.forceStart = false;
         this.pvpEnable = false;
-
-        PluginAnnotations.load(survivalGames, gameSetting);
         SurvivalGamesAPI.setGame(this);
     }
 
@@ -69,9 +73,9 @@ public class Game {
      */
     protected void init() {
         this.gameWorld = survivalGames.getServer().getWorld(this.gameSetting.getWorldName());
+        this.kitManager.createKitUpdater();
         this.spawnTerrainForming = SpawnTerrainForming.create(this.survivalGames, this.gameWorld,
                 this.gameSetting.getTerrainFormingSize(), this.survivalGames.getLogger());
-        this.pluginScoreBoardManager = new PluginScoreBoardManager(this);
         this.pluginScoreBoardManager.runTaskTimerAsynchronously(this.survivalGames, 0L, 10L);
         this.survivalGames.getCommand("kit").setExecutor(this.kitManager);
     }
@@ -85,6 +89,10 @@ public class Game {
         if (message == null || message.isEmpty() || StringUtils.isWhitespace(message))
             return;
         this.survivalGames.getServer().broadcastMessage(ChatColor.GOLD + "[" + ChatColor.RED + this.survivalGames.getName() + ChatColor.GOLD + "] " + message);
+    }
+
+    public DataBaseManager getDataBaseManager() {
+        return this.dataBaseManager;
     }
 
     public KitManager getKitManager() {
@@ -110,6 +118,9 @@ public class Game {
                 this.nextStatTime = System.currentTimeMillis() + (this.getGameSetting().getStartTime() * 1000);
                 break;
             case DURING:
+                this.gameStartTime = System.currentTimeMillis();
+                this.gameEndTime = this.gameStartTime + ((this.gameSetting.getTimeBorder() + 20) * 1000);
+                this.totalPlayers = this.players.size();
                 this.getStepManager().nextStep();
                 break;
             case STOPPING:
@@ -141,10 +152,6 @@ public class Game {
         if (this.spawnTerrainForming == null)
             return this.gameWorld.getSpawnLocation();
         return this.spawnTerrainForming.getSpawn();
-    }
-
-    public void setTotalPlayers(int totalPlayers) {
-        this.totalPlayers = totalPlayers;
     }
 
     public int getTotalPlayers() {
@@ -186,14 +193,14 @@ public class Game {
     public void addPlayer(Player player) {
         if (player == null || !player.isOnline())
             return;
-        players.add(player);
+        this.players.add(player);
         player.setGameMode(GameMode.SURVIVAL);
     }
 
     public void addSpectator(Player player) {
         if (player == null)
             return;
-        players.remove(player);
+        this.players.remove(player);
         player.setGameMode(GameMode.SPECTATOR);
     }
 
@@ -205,12 +212,12 @@ public class Game {
         return this.survivalGames.getServer().getOnlinePlayers().size() - this.players.size();
     }
 
-    public void setGameEndTime(long gameEndTime) {
-        this.gameEndTime = gameEndTime;
+    public long getGameStartTime() {
+        return this.gameStartTime;
     }
 
     public long getGameEndTime() {
-        return gameEndTime;
+        return this.gameEndTime;
     }
 
     public SurvivalGames getPlugin() {

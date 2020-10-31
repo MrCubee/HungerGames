@@ -19,13 +19,13 @@ public class EntityDamageByEntity implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void entityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-		if (!survivalGames.getGame().isPvpEnable()) {
-			if ((event.getEntity() instanceof Player) && (event.getDamager() instanceof Player)) {
-				event.setCancelled(true);
-			}
+		Projectile projectile;
 
-			if ((event.getEntity() instanceof Player) && (event.getDamager() instanceof Projectile)) {
-				Projectile projectile = (Projectile) event.getDamager();
+		if (!survivalGames.getGame().isPvpEnable()) {
+			if (event.getEntity() instanceof Player && event.getDamager() instanceof Player)
+				event.setCancelled(true);
+			if (event.getEntity() instanceof Player && event.getDamager() instanceof Projectile) {
+				projectile = (Projectile) event.getDamager();
 				if (projectile.getShooter() instanceof Player)
 					event.setCancelled(true);
 			}

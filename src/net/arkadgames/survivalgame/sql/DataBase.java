@@ -1,42 +1,136 @@
 package net.arkadgames.survivalgame.sql;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.UUID;
 
-import fr.mrcubee.scoreboard.Score;
-import org.bukkit.entity.Player;
+import fr.mrcubee.pluginutil.spigot.annotations.PluginAnnotations;
+import fr.mrcubee.pluginutil.spigot.annotations.config.Config;
 
 import fr.mrcubee.survivalgames.SurvivalGames;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import javax.imageio.ImageIO;
 
 public class DataBase {
 
-	private SurvivalGames survivalGames;
+	private final SurvivalGames survivalGames;
+
+	@Config(path = "db.host")
+	private String host;
+
+	@Config(path = "db.database")
+	private String dataBase;
+
+	@Config(path = "db.user")
+	private String user;
+
+	@Config(path = "db.password")
+	private String password;
+
 	private Connection connection;
 
-	public DataBase(SurvivalGames survivalGames) throws SQLException {
-		connection = DriverManager.getConnection("jdbc:mysql://localhost", "arkadgames", "password");
+	protected DataBase(SurvivalGames survivalGames) {
 		this.survivalGames = survivalGames;
+		PluginAnnotations.load(survivalGames, this);
+		getConnection();
+	}
+
+	protected Connection getConnection() {
+		try {
+			if (this.connection == null || this.connection.isClosed()) {
+				this.survivalGames.getLogger().info("Connecting to " + this.toString() + "...");
+				this.connection = null;
+				this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + "/" + this.dataBase
+						+ "?characterEncoding=utf8", this.user, this.password);
+			}
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+		return this.connection;
+	}
+
+	private boolean savePlayerHead(UUID uuid) {
+		BufferedImage bufferedImage;
+		ByteArrayOutputStream baos;
+		byte[] imageInByte = null;
+		PreparedStatement statement;
+
+		if (uuid == null)
+			return false;
+		try {
+			bufferedImage = ImageIO.read(new URL("https://cravatar.eu/avatar/" + uuid.toString() + "/128"));
+			baos = new ByteArrayOutputStream();
+			ImageIO.write(bufferedImage, "png", baos);
+			imageInByte = baos.toByteArray();
+		} catch (IOException ignored) {}
+		if (imageInByte == null)
+			return false;
+		connection = getConnection();
+		if (connection == null)
+			return false;
+		try {
+			statement = connection.prepareStatement("INSERT playerhead VALUES (?, ?) ON DUPLICATE KEY UPDATE data = ?");
+			statement.setString(1, uuid.toString().replaceAll("-", ""));
+			statement.setBytes(2, imageInByte);
+			statement.setBytes(3, imageInByte);
+			return statement.execute();
+		} catch (SQLException ignored) {
+			ignored.printStackTrace();
+		}
+		return false;
+	}
+
+	private boolean savePlayerName(UUID uuid) {
+		Player player;
+		PreparedStatement statement;
+
+		if (uuid == null)
+			return false;
+		player = Bukkit.getPlayer(uuid);
+		if (player == null)
+			return false;
+		connection = getConnection();
+		if (connection == null)
+			return false;
+		try {
+			statement = connection.prepareStatement("INSERT playername VALUES (?, ?) ON DUPLICATE KEY UPDATE name = ?");
+			statement.setString(1, uuid.toString().replaceAll("-", ""));
+			statement.setString(2, player.getName());
+			statement.setString(3, player.getName());
+			return statement.execute();
+		} catch (SQLException ignored) {
+			ignored.printStackTrace();
+		}
+		return false;
 	}
 
 	public boolean hasPlayerData(UUID uuid) {
+		Connection connection;
 		PreparedStatement statement;
 		ResultSet resultSet;
 
-		if (uuid == null || connection == null)
+		if (uuid == null)
+			return false;
+		connection = getConnection();
+		if (connection == null)
 			return false;
 		try {
 			statement = connection.prepareStatement("SELECT uuid FROM survivalgames WHERE uuid = ?");
-			statement.setString(1, uuid.toString());
+			statement.setString(1, uuid.toString().replaceAll("-", ""));
 			resultSet = statement.executeQuery();
-
 			return resultSet.next();
-		} catch (SQLException e) {}
+		} catch (SQLException ignored) {
+			ignored.printStackTrace();
+		}
 		return false;
 	}
 
@@ -45,94 +139,84 @@ public class DataBase {
 		PreparedStatement statement;
 		ResultSet resultSet;
 
-		if (uuid == null || connection == null)
+		if (uuid == null)
+			return null;
+		connection = getConnection();
+		if (connection == null)
 			return null;
 		try {
-			statement = connection.prepareStatement("SELECT last_win, win, play, total_time, player_kill, last_connection FROM survivalgames WHERE uuid = ?");
-			statement.setString(1, uuid.toString());
+			statement = connection.prepareStatement("SELECT lastwin, play, win, kills, time, survivalgames_rank(survivalgames_ratio(uuid)) AS 'rank' FROM survivalgames WHERE uuid = ?");
+			statement.setString(1, uuid.toString().replaceAll("-", ""));
 			resultSet = statement.executeQuery();
-			if (!resultSet.next())
-				return null;
+			if (!resultSet.next()) {
+				playerData = new PlayerData();
+				playerData.setCanSaveInDB(true);
+				return playerData;
+			}
 			playerData = new PlayerData();
-			playerData.lastWin = resultSet.getString("last_win").equals("YES");
-			playerData.win = resultSet.getLong("win");
-			playerData.play = resultSet.getLong("play");
-			playerData.totalTime = resultSet.getLong("total_time");
-			playerData.playerKill = resultSet.getLong("player_kill");
-			playerData.lastConnection = resultSet.getDate("last_connection");
-			return (playerData);
-		} catch (SQLException e) {}
+			playerData.setLastWin(resultSet.getBoolean(1));
+			playerData.setPlay(resultSet.getInt(2));
+			playerData.setWin(resultSet.getInt(3));
+			playerData.setKill(resultSet.getInt(4));
+			playerData.setPlayTime(resultSet.getLong(5));
+			playerData.setRank(resultSet.getInt(6));
+			playerData.setCanSaveInDB(true);
+			return playerData;
+		} catch (SQLException ignored) {
+			ignored.printStackTrace();
+		}
 		return null;
 	}
 
-	private boolean registerPlayerData(UUID uuid, PlayerData playerData) {
-		PreparedStatement statement;
-
-		if (uuid == null || playerData == null || connection == null)
-			return false;
-		try {
-			statement = connection.prepareStatement("INSERT survivalgames VALUES (?, ?, ?, ?, ?, ?, ?)");
-			statement.setString(1, uuid.toString());
-			statement.setString(2, (playerData.lastWin) ? "YES" : "NO");
-			statement.setLong(3, playerData.win);
-			statement.setLong(4, playerData.play);
-			statement.setLong(5, playerData.totalTime);
-			statement.setLong(6, playerData.playerKill);
-			statement.setDate(7, playerData.lastConnection);
-			statement.execute();
-			return true;
-		} catch (SQLException e) {}
-		return false;
-	}
-
-	private boolean updatePlayerData(UUID uuid, PlayerData playerData) {
-		PreparedStatement statement;
-
-		if (uuid == null || playerData == null || connection == null)
-			return false;
-		try {
-			statement = connection.prepareStatement("UPDATE survivalgames SET last_win = ?, win = ?, play = ?, total_time = ?, player_kill = ?, last_connection = ? WHERE uuid = ?");
-			statement.setString(1, (playerData.lastWin) ? "YES" : "NO");
-			statement.setLong(2, playerData.win);
-			statement.setLong(3, playerData.play);
-			statement.setLong(4, playerData.totalTime);
-			statement.setLong(5, playerData.playerKill);
-			statement.setDate(6, playerData.lastConnection);
-			statement.setString(7, uuid.toString());
-			statement.execute();
-			return true;
-		} catch (SQLException e) {}
-		return false;
-	}
-
 	public boolean setPlayerData(UUID uuid, PlayerData playerData) {
-		if (hasPlayerData(uuid))
-			return updatePlayerData(uuid, playerData);
-		return registerPlayerData(uuid, playerData);
+		Connection connection;
+		PreparedStatement statement;
+
+		if (uuid == null || playerData == null || !playerData.canSaveInDB())
+			return false;
+		savePlayerName(uuid);
+		savePlayerHead(uuid);
+		connection = getConnection();
+		if (connection == null)
+			return false;
+		try {
+			statement = connection.prepareStatement("INSERT survivalgames VALUES (?, ?, ?, ?, ?, ?, DEFAULT) ON DUPLICATE KEY UPDATE lastwin = ?, play = ?, win = ?, kills = ?, time = ?");
+			statement.setString(1, uuid.toString().replaceAll("-", ""));
+			statement.setBoolean(2, playerData.isLastWin());
+			statement.setInt(3, playerData.getPlay());
+			statement.setInt(4, playerData.getWin());
+			statement.setInt(5, playerData.getKill());
+			statement.setLong(6, playerData.getPlayTime());
+			statement.setBoolean(7, playerData.isLastWin());
+			statement.setInt(8, playerData.getPlay());
+			statement.setInt(9, playerData.getWin());
+			statement.setInt(10, playerData.getKill());
+			statement.setLong(11, playerData.getPlayTime());
+			return statement.execute();
+		} catch (SQLException ignored) {
+			ignored.printStackTrace();
+		}
+		return false;
 	}
 
-	public void updatefinishPlayerData(Player player, boolean win) {
-		Score score;
-		PlayerData playerData;
-
-		if (player == null)
-			return;
-		playerData = survivalGames.getDataBase().getPlayerData(player.getUniqueId());
-		if (playerData == null)
-			playerData = new PlayerData();
-		playerData.lastWin = win;
-		playerData.totalTime += (this.survivalGames.getGame().getGameEndTime() - System.currentTimeMillis()) / 60000;
-		score = survivalGames.getGame().getPluginScoreBoardManager().getKillObjective().getScore(player.getName());
-		playerData.playerKill += (score != null) ? score.getScore() : 0;
-		if (win)
-			playerData.win++;
-		playerData.lastConnection = new Date(Calendar.getInstance().getTime().getTime());
-		survivalGames.getDataBase().setPlayerData(player.getUniqueId(), playerData);
+	public boolean close() {
+		try {
+			if (this.connection == null || this.connection.isClosed())
+				return true;
+			this.connection.close();
+			return true;
+		} catch (SQLException ignored) {}
+		return false;
 	}
 
-	public void close() throws SQLException {
-		if (connection != null)
-			connection.close();
+	@Override
+	public String toString() {
+		return "DataBase{" +
+				"survivalGames=" + survivalGames +
+				", host='" + host + '\'' +
+				", dataBase='" + dataBase + '\'' +
+				", user='" + user + '\'' +
+				", connection=" + connection +
+				'}';
 	}
-
 }

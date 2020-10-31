@@ -17,12 +17,15 @@ public class PluginScoreBoardManager extends BukkitRunnable {
     private final Game game;
     private final Map<UUID, CustomSideBar> playerObjective;
     private final Objective killObjective;
+    private final Objective rankObjective;
 
     public PluginScoreBoardManager(Game game) {
         this.game = game;
         this.playerObjective = new HashMap<UUID, CustomSideBar>();
         this.killObjective = Objective.create("kill", "kill");
+        this.rankObjective = Objective.create("rank","#");
         this.killObjective.setLocation(ObjectiveLocation.LIST);
+        this.rankObjective.setLocation(ObjectiveLocation.BELOW_NAME);
     }
 
     public CustomSideBar getPlayerSideBar(Player player) {
@@ -38,6 +41,7 @@ public class PluginScoreBoardManager extends BukkitRunnable {
                 this.playerObjective.put(player.getUniqueId(), objective);
             objective.getReceivers().add(player);
             this.killObjective.getReceivers().add(player);
+            this.rankObjective.getReceivers().add(player);
         }
         return objective;
     }
@@ -51,6 +55,7 @@ public class PluginScoreBoardManager extends BukkitRunnable {
         if (customSideBar != null)
             customSideBar.getReceivers().remove(offlinePlayer);
         this.killObjective.getReceivers().remove(offlinePlayer);
+        this.rankObjective.getReceivers().remove(offlinePlayer);
         return true;
     }
 
@@ -59,7 +64,11 @@ public class PluginScoreBoardManager extends BukkitRunnable {
     }
 
     public Objective getKillObjective() {
-        return killObjective;
+        return this.killObjective;
+    }
+
+    public Objective getRankObjective() {
+        return this.rankObjective;
     }
 
     @Override

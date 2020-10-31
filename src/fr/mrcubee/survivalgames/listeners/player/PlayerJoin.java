@@ -2,6 +2,8 @@ package fr.mrcubee.survivalgames.listeners.player;
 
 import java.util.ArrayList;
 
+import fr.mrcubee.survivalgames.Game;
+import net.arkadgames.survivalgame.sql.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -45,9 +47,12 @@ public class PlayerJoin implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void playerJoinEvent(PlayerJoinEvent event) {
-		GameStats gameStats = survivalGames.getGame().getGameStats();
+		Game game = this.survivalGames.getGame();
+		GameStats gameStats = game.getGameStats();
+		PlayerData playerData = game.getDataBaseManager().getPlayerData(event.getPlayer().getUniqueId());
 
-		this.survivalGames.getGame().getPluginScoreBoardManager().getPlayerSideBar(event.getPlayer());
+		game.getPluginScoreBoardManager().getPlayerSideBar(event.getPlayer());
+		game.getPluginScoreBoardManager().getRankObjective().setScore(event.getPlayer().getName(), playerData.getRank());
 		if (gameStats == GameStats.DURING) {
 			event.setJoinMessage(null);
 			setupSpectator(event.getPlayer());
@@ -55,7 +60,6 @@ public class PlayerJoin implements Listener {
 			setupWaitingPlayer(event.getPlayer());
 			event.setJoinMessage(ChatColor.GREEN + "[+] " + event.getPlayer().getName());
 		}
-		
 		event.getPlayer().teleport(survivalGames.getGame().getSpawn());
 	}
 }
