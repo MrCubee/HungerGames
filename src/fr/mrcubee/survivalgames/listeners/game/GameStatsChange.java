@@ -54,7 +54,7 @@ public class GameStatsChange implements Listener {
         DataBaseManager dataBaseManager = this.survivalGames.getGame().getDataBaseManager();
 
         server.getOnlinePlayers().forEach(player -> player.kickPlayer(ChatColor.GOLD + "The server will restart !"));
-        dataBaseManager.sendAllPLayerDataAsync();
+        dataBaseManager.sendAllPlayerDataAsync();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

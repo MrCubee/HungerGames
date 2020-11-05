@@ -46,7 +46,7 @@ public class DataBaseManager {
         return this.dataBase.setPlayerInfo(uuid);
     }
 
-    public void sendAllPLayerDataAsync() {
+    public void sendAllPlayerDataAsync() {
         if (this.task != null)
             return;
         this.task = new BukkitRunnable() {
