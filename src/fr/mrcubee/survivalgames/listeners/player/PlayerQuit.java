@@ -49,6 +49,7 @@ public class PlayerQuit implements Listener {
         } else {
             event.setQuitMessage(ChatColor.RED + "[-] " + event.getPlayer().getName());
             dataBaseManager.sendPlayerInfo(event.getPlayer().getUniqueId());
+            dataBaseManager.sendPlayerData(event.getPlayer().getUniqueId());
         }
         game.addSpectator(event.getPlayer());
         game.getPluginScoreBoardManager().removePlayerSideBar(event.getPlayer());
