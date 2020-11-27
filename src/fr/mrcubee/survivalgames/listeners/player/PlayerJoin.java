@@ -56,7 +56,7 @@ public class PlayerJoin implements Listener {
 		if (game.getGameStats() == GameStats.DURING) {
 			event.setJoinMessage(null);
 			player.getInventory().clear();
-			game.addPlayer(player);
+			game.addSpectator(player);
 		} else {
 			player.getInventory().clear();
 			player.getInventory().addItem(createKitItem());
