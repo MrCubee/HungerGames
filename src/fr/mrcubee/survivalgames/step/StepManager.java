@@ -1,6 +1,5 @@
 package fr.mrcubee.survivalgames.step;
 
-import fr.mrcubee.pluginutil.spigot.annotations.PluginAnnotations;
 import fr.mrcubee.survivalgames.Game;
 
 import java.util.ArrayList;

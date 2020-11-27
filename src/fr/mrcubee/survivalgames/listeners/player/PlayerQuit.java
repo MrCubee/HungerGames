@@ -4,7 +4,6 @@ import fr.mrcubee.scoreboard.Score;
 import fr.mrcubee.survivalgames.Game;
 import net.arkadgames.survivalgame.sql.DataBaseManager;
 import net.arkadgames.survivalgame.sql.PlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
