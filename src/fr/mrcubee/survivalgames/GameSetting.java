@@ -1,9 +1,7 @@
 package fr.mrcubee.survivalgames;
 
+import fr.mrcubee.annotation.spigot.config.Config;
 import org.bukkit.ChatColor;
-
-import fr.mrcubee.pluginutil.spigot.annotations.config.Config;
-
 
 public class GameSetting {
 
