@@ -5,19 +5,36 @@
     <groupId>fr.mrcubee.minecraft.plugin</groupId>
     <artifactId>survivalgames</artifactId>
     <version>1.2</version>
-    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <name>SurvivalGames</name>
-    <description>minecraft survival mini-game</description>
+    <description>Minecraft survival mini-game</description>
+
+    <organization>
+        <name>ArkadGames</name>
+        <url>https://github.com/ArkadGamesNetwork</url>
+    </organization>
+
+    <distributionManagement>
+        <repository>
+            <id>arkadgames</id>
+            <url>http://nexus.arkadgames.net/repository/snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+    </distributionManagement>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/ArkadGamesNetwork/SurvivalGames/issues</url>
+    </issueManagement>
 
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>arkadgames</id>
+            <url>http://nexus.arkadgames.net/repository/snapshots/</url>
         </repository>
     </repositories>
 
@@ -25,13 +42,13 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <version>1.8.8</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.ArkadGamesNetwork</groupId>
-            <artifactId>ScoreBoardLib</artifactId>
-            <version>f59c55ebeaa7e610be40614dd2bb9f605b90e553</version>
+            <groupId>fr.mrcubee.library</groupId>
+            <artifactId>scoreboard</artifactId>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 
@@ -73,4 +90,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
