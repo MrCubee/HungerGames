@@ -21,7 +21,7 @@
     <distributionManagement>
         <repository>
             <id>arkadgames</id>
-            <url>http://nexus.arkadgames.net/repository/snapshots/</url>
+            <url>http://nexus.arkadgames.net/repository/minecraft/</url>
             <uniqueVersion>false</uniqueVersion>
         </repository>
     </distributionManagement>
@@ -34,7 +34,7 @@
     <repositories>
         <repository>
             <id>arkadgames</id>
-            <url>http://nexus.arkadgames.net/repository/snapshots/</url>
+            <url>http://nexus.arkadgames.net/repository/minecraft/</url>
         </repository>
     </repositories>
 
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8.8</version>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -95,5 +95,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

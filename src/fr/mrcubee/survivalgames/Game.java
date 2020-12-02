@@ -1,6 +1,6 @@
 package fr.mrcubee.survivalgames;
 
-import fr.mrcubee.pluginutil.spigot.annotations.PluginAnnotations;
+import fr.mrcubee.plugin.util.spigot.annotations.PluginAnnotations;
 import fr.mrcubee.survivalgames.api.event.GameStatsChangeEvent;
 import fr.mrcubee.survivalgames.kit.KitManager;
 import fr.mrcubee.survivalgames.scoreboard.PluginScoreBoardManager;

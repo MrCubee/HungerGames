@@ -1,4 +1,4 @@
-package fr.mrcubee.pluginutil.spigot.annotations;
+package fr.mrcubee.plugin.util.spigot.annotations;
 
 import fr.mrcubee.annotation.spigot.config.ConfigAnnotation;
 import org.bukkit.plugin.Plugin;

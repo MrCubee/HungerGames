@@ -1,7 +1,7 @@
 package fr.mrcubee.survivalgames.step.steps;
 
-import fr.mrcubee.pluginutil.spigot.annotations.PluginAnnotations;
-import fr.mrcubee.pluginutil.spigot.annotations.config.Config;
+import fr.mrcubee.annotation.spigot.config.Config;
+import fr.mrcubee.plugin.util.spigot.annotations.PluginAnnotations;
 import fr.mrcubee.survivalgames.Game;
 import fr.mrcubee.survivalgames.step.Step;
 import fr.mrcubee.survivalgames.step.StepUtil;

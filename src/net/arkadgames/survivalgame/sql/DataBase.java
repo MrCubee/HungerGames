@@ -11,8 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import fr.mrcubee.pluginutil.spigot.annotations.PluginAnnotations;
-import fr.mrcubee.pluginutil.spigot.annotations.config.Config;
+import fr.mrcubee.annotation.spigot.config.Config;
+import fr.mrcubee.plugin.util.spigot.annotations.PluginAnnotations;
 
 import fr.mrcubee.survivalgames.SurvivalGames;
 import org.bukkit.Bukkit;
