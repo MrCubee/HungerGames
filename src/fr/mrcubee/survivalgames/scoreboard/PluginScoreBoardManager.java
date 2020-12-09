@@ -3,9 +3,9 @@ package fr.mrcubee.survivalgames.scoreboard;
 import java.util.*;
 import java.util.stream.Stream;
 
+import fr.mrcubee.bukkit.scoreboard.ObjectiveLocation;
 import fr.mrcubee.scoreboard.CustomSideBar;
 import fr.mrcubee.scoreboard.Objective;
-import fr.mrcubee.scoreboard.ObjectiveLocation;
 import fr.mrcubee.survivalgames.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
