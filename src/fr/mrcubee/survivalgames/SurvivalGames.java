@@ -5,6 +5,7 @@ import fr.mrcubee.survivalgames.step.StepManager;
 import fr.mrcubee.survivalgames.step.steps.FeastStep;
 import fr.mrcubee.survivalgames.step.steps.GameStep;
 import fr.mrcubee.survivalgames.step.steps.PvpStep;
+import fr.mrcubee.survivalgames.world.BiomeReplacer;
 import fr.mrcubee.util.FileUtil;
 import fr.mrcubee.world.WorldSpawnSetup;
 
@@ -14,6 +15,7 @@ import net.arkadgames.survivalgame.sql.DataBaseManager;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SurvivalGames extends JavaPlugin {
@@ -21,8 +23,11 @@ public class SurvivalGames extends JavaPlugin {
 	private Game game;
 	private Timer timer;
 
+	@Override
 	public void onLoad() {
 		saveDefaultConfig();
+
+		BiomeReplacer.removeOcean();
 		this.game = new Game(this);
 		File worldFile = new File("./" + this.game.getGameSetting().getWorldName());
 		File netherFile = new File("./" + this.game.getGameSetting().getWorldName() + "_nether");
@@ -32,6 +37,7 @@ public class SurvivalGames extends JavaPlugin {
 		FileUtil.delete(endFile);
 	}
 
+	@Override
 	public void onEnable() {
 		StepManager stepManager;
 		World world;
@@ -71,11 +77,13 @@ public class SurvivalGames extends JavaPlugin {
 		this.timer.runTaskTimer(this, 0L, 20L);
 	}
 
+	@Override
 	public void onDisable() {
 		File logsFile = new File("./logs");
 		FileUtil.delete(logsFile);
 	}
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!sender.isOp())
 			return false;
@@ -85,7 +93,7 @@ public class SurvivalGames extends JavaPlugin {
 			getGame().forcePvp();
 		return true;
 	}
-	
+
 	public DataBaseManager getDataBaseManager() {
 		return this.game.getDataBaseManager();
 	}
