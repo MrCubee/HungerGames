@@ -7,6 +7,7 @@ import fr.mrcubee.bukkit.scoreboard.ObjectiveLocation;
 import fr.mrcubee.scoreboard.CustomSideBar;
 import fr.mrcubee.scoreboard.Objective;
 import fr.mrcubee.survivalgames.Game;
+import net.arkadgames.survivalgame.sql.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -77,13 +78,17 @@ public class PluginScoreBoardManager extends BukkitRunnable {
             Iterator<OfflinePlayer> offlinePlayerIterator = sidebar.getReceivers().iterator();
             OfflinePlayer offlinePlayer;
             Player player;
+            PlayerData playerData;
 
             if (!offlinePlayerIterator.hasNext())
                 return;
             offlinePlayer = offlinePlayerIterator.next();
             if (offlinePlayer == null || (player = offlinePlayer.getPlayer()) == null)
                 return;
-            sidebar.setLines(ScoreboardBuilder.build(this.game, player));
+            playerData = this.game.getDataBaseManager().getPlayerData(player.getUniqueId());
+            if (playerData != null)
+                getRankObjective().setScore(player.getName(), playerData.getRank());
+            sidebar.setLines(ScoreboardBuilder.build(this.game, player, playerData));
         });
     }
 }

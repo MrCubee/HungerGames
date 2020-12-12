@@ -76,8 +76,7 @@ public final class ScoreboardBuilder {
         result.add(ChatColor.YELLOW.toString() + "mc.arkadgames.net");
     }
 
-    protected static List<String> build(Game game, Player player) {
-        PlayerData playerData = game.getDataBaseManager().getPlayerData(player.getUniqueId());
+    protected static List<String> build(Game game, Player player, PlayerData playerData) {
         List<String> result;
 
         if (game == null || player == null)
