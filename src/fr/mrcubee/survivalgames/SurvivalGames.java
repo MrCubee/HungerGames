@@ -40,7 +40,6 @@ public class SurvivalGames extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		StepManager stepManager;
-		World world;
 
 		this.game.init();
 
@@ -54,8 +53,7 @@ public class SurvivalGames extends JavaPlugin {
 		this.timer = new Timer(this);
 
 		// **WORLD SETUP** //
-		world = this.game.getGameWorld();
-		if (world == null || !WorldSpawnSetup.setup(world, this.game.getGameSetting().getLoadSize(), this.getLogger())) {
+		if (!WorldSpawnSetup.setup(this.game.getGameWorld(), this.game.getGameSetting().getLoadSize(), this.getLogger())) {
 			getServer().shutdown();
 			return;
 		}

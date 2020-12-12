@@ -31,14 +31,9 @@ public class WorldSpawnSetup {
     }
 
     public static boolean setup(World world, int loadSize, Logger logger) {
-        Biome biome;
-
         if (world == null || loadSize < 0)
             return false;
         loadArena(world, loadSize, logger);
-        biome = world.getBiome(0, 0);
-        if (biome.name().toLowerCase().contains("ocean"))
-            return false;
         return true;
     }
 
