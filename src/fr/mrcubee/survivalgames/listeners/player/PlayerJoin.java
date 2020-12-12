@@ -19,30 +19,18 @@ import fr.mrcubee.survivalgames.SurvivalGames;
 
 public class PlayerJoin implements Listener {
 	
-	private SurvivalGames survivalGames;
+	private final SurvivalGames survivalGames;
+	private final ItemStack itemKit;
 	
 	public PlayerJoin(SurvivalGames survivalGames) {
+		ItemMeta itemKitMeta;
+
 		this.survivalGames = survivalGames;
-	}
-	
-	private ItemStack createKitItem() {
-		ItemStack itemStackKit = new ItemStack(Material.NETHER_STAR);
-		ItemMeta  itemMetaKit = itemStackKit.getItemMeta();
-		
-		itemMetaKit.setDisplayName(ChatColor.YELLOW + "Kit");
-		itemMetaKit.setLore(new ArrayList<String>());
-		itemStackKit.setItemMeta(itemMetaKit);
-		return itemStackKit;
-	}
-	
-	private void setupSpectator(Player player) {
-		survivalGames.getGame().addSpectator(player);
-	}
-	
-	private void setupWaitingPlayer(Player player) {
-		player.getInventory().clear();
-		player.getInventory().addItem(createKitItem());
-		this.survivalGames.getGame().addPlayer(player);
+		this.itemKit = new ItemStack(Material.NETHER_STAR);
+		itemKitMeta = this.itemKit.getItemMeta();
+		itemKitMeta.setDisplayName(ChatColor.YELLOW + "Kit");
+		itemKitMeta.setLore(new ArrayList<String>());
+		this.itemKit.setItemMeta(itemKitMeta);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -52,14 +40,13 @@ public class PlayerJoin implements Listener {
 		Player player = event.getPlayer();
 
 		game.getPluginScoreBoardManager().getPlayerSideBar(event.getPlayer());
-		game.getPluginScoreBoardManager().getRankObjective().setScore(event.getPlayer().getName(), playerData.getRank());
 		if (game.getGameStats() == GameStats.DURING) {
 			event.setJoinMessage(null);
 			player.getInventory().clear();
 			game.addSpectator(player);
 		} else {
 			player.getInventory().clear();
-			player.getInventory().addItem(createKitItem());
+			player.getInventory().addItem(this.itemKit);
 			game.addPlayer(event.getPlayer());
 			event.setJoinMessage(ChatColor.GREEN + "[+] " + event.getPlayer().getName());
 		}
