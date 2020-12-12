@@ -78,12 +78,13 @@ public class PlayerData {
     @Override
     public String toString() {
         return "PlayerData{" +
-                "saveInDB=" + saveInDB +
-                ", lastWin=" + lastWin +
-                ", play=" + play +
-                ", win=" + win +
-                ", kill=" + kill +
-                ", playTime=" + playTime +
+                "saveInDB=" + this.saveInDB +
+                ", lastWin=" + this.lastWin +
+                ", play=" + this.play +
+                ", win=" + this.win +
+                ", kill=" + this.kill +
+                ", playTime=" + this.playTime +
+                ", rank=" + this.rank +
                 '}';
     }
 }

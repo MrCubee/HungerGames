@@ -216,11 +216,11 @@ public class DataBase {
 	@Override
 	public String toString() {
 		return "DataBase{" +
-				"survivalGames=" + survivalGames +
-				", host='" + host + '\'' +
-				", dataBase='" + dataBase + '\'' +
-				", user='" + user + '\'' +
-				", connection=" + connection +
+				"survivalGames=" + this.survivalGames +
+				", host='" + this.host + '\'' +
+				", dataBase='" + this.dataBase + '\'' +
+				", user='" + this.user + '\'' +
+				", connection=" + this.connection +
 				'}';
 	}
 }
