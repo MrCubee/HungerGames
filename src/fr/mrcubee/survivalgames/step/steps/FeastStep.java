@@ -1,6 +1,7 @@
 package fr.mrcubee.survivalgames.step.steps;
 
 import fr.mrcubee.annotation.spigot.config.Config;
+import fr.mrcubee.langlib.Lang;
 import fr.mrcubee.plugin.util.spigot.annotations.PluginAnnotations;
 import fr.mrcubee.survivalgames.Game;
 import fr.mrcubee.survivalgames.step.Step;
@@ -34,7 +35,8 @@ public class FeastStep extends Step {
     public void start() {
         super.start();
         playersPlaySound(Sound.ORB_PICKUP, 100, 1);
-        getGame().broadcastMessage("Feast in " + ChatColor.GOLD + StepUtil.secondToString(this.spawnTime));
+        getGame().broadcastMessage("step.feastStep.broadcast", "Feast in &c%s", true,
+                StepUtil.secondToString(this.spawnTime));
     }
 
     private ItemStack createItemStack(Random random) {
@@ -108,7 +110,8 @@ public class FeastStep extends Step {
 
     @Override
     public String scoreBoardGameStatus(Player player) {
-        return ChatColor.RED + "Feast in " + ChatColor.GOLD + StepUtil.secondToString(getEndSeconds());
+        return Lang.getMessage(player, "step.feastStep.scoreboard", "&cFeast in &6%s", true,
+                StepUtil.secondToString(getEndSeconds()));
     }
 
     public static FeastStep create(Game game) {

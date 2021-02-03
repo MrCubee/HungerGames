@@ -1,5 +1,6 @@
 package fr.mrcubee.survivalgames;
 
+import fr.mrcubee.langlib.Lang;
 import fr.mrcubee.plugin.util.spigot.annotations.PluginAnnotations;
 import fr.mrcubee.survivalgames.api.event.GameStatsChangeEvent;
 import fr.mrcubee.survivalgames.kit.KitManager;
@@ -10,11 +11,7 @@ import java.util.*;
 import fr.mrcubee.survivalgames.step.StepManager;
 import fr.mrcubee.world.SpawnTerrainForming;
 import net.arkadgames.survivalgame.sql.DataBaseManager;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 /**
@@ -80,15 +77,15 @@ public class Game {
         this.survivalGames.getCommand("kit").setExecutor(this.kitManager);
     }
 
-    /**
-     * This method allows you to send a message to all players in the standard SurvivalGames format.
-     *
-     * @param message The message to send to the players.
-     */
-    public void broadcastMessage(String message) {
-        if (message == null || message.isEmpty() || StringUtils.isWhitespace(message))
+    public void broadcastMessage(String messageId, String rescueMessage, boolean color, Object... objects) {
+        String prefix;
+
+        if (messageId == null || rescueMessage == null)
             return;
-        this.survivalGames.getServer().broadcastMessage(ChatColor.GOLD + "[" + ChatColor.RED + this.survivalGames.getName() + ChatColor.GOLD + "] " + message);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            prefix = Lang.getMessage(player, "broadcast.prefix", "&6[&cSurvivalGames&6]", true);
+            player.sendMessage(prefix + " " + Lang.getMessage(messageId, rescueMessage, color, objects));
+        }
     }
 
     public DataBaseManager getDataBaseManager() {

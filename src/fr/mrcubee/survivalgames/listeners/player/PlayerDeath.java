@@ -2,6 +2,7 @@ package fr.mrcubee.survivalgames.listeners.player;
 
 import java.util.Set;
 
+import fr.mrcubee.langlib.Lang;
 import fr.mrcubee.scoreboard.Score;
 import fr.mrcubee.survivalgames.Game;
 import fr.mrcubee.survivalgames.kit.KitManager;
@@ -21,7 +22,7 @@ import fr.mrcubee.survivalgames.kit.Kit;
 
 public class PlayerDeath implements Listener {
 
-    private SurvivalGames survivalGames;
+    private final SurvivalGames survivalGames;
 
     public PlayerDeath(SurvivalGames survivalGames) {
         this.survivalGames = survivalGames;
@@ -64,7 +65,7 @@ public class PlayerDeath implements Listener {
                 playerData.setWin(playerData.getWin() + 1);
                 playerData.setPlayTime(playerData.getPlayTime() + ((System.currentTimeMillis() - game.getGameStartTime()) / 1000));
             }
-            game.broadcastMessage(ChatColor.RED + player.getName() + ChatColor.GOLD + " WIN THE GAME !!!");
+            game.broadcastMessage("broadcast.player.win", "&c%s &6WIN THE GAME !!!", true, player.getName());
         });
     }
 
@@ -98,10 +99,14 @@ public class PlayerDeath implements Listener {
         if (game.getNumberPlayer() > 1) {
             for (Player player : Bukkit.getOnlinePlayers())
                 player.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 100, 1);
-            event.setDeathMessage(ChatColor.RED + event.getEntity().getName() + " (" + ChatColor.GRAY + kitsName
-            + ChatColor.RED + ")" + ChatColor.GOLD + " is Dead ! There are " + ChatColor.RED + game.getNumberPlayer() + " players left.");
+            event.setDeathMessage(null);
+            for (Player player : Bukkit.getOnlinePlayers())
+                player.sendMessage(Lang.getMessage(player, "broadcast.player.death", "&c%s(&7%s&c) &6is Dead ! There are &c%d players left.", true,
+                        event.getEntity().getName(), kitsName, game.getNumberPlayer()));
         } else {
-            event.setDeathMessage(ChatColor.RED + event.getEntity().getName() + " (" + ChatColor.GRAY + kitsName + ChatColor.RED + ")" + ChatColor.GOLD + " is Dead ! ");
+            for (Player player : Bukkit.getOnlinePlayers())
+                player.sendMessage(Lang.getMessage(player, "broadcast.player.lastDeath", "&c%s(&7%s&c) &6is Dead !", true,
+                        event.getEntity().getName(), kitsName));
             victory(game);
         }
         game.getKitManager().removeKit(event.getEntity());

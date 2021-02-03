@@ -1,11 +1,11 @@
 package fr.mrcubee.survivalgames.step.steps;
 
 import fr.mrcubee.annotation.spigot.config.Config;
+import fr.mrcubee.langlib.Lang;
 import fr.mrcubee.plugin.util.spigot.annotations.PluginAnnotations;
 import fr.mrcubee.survivalgames.Game;
 import fr.mrcubee.survivalgames.step.Step;
 import fr.mrcubee.survivalgames.step.StepUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -49,16 +49,18 @@ public class PvpStep extends Step {
         if (seconds <= 0) {
             playersPlaySound(Sound.ORB_PICKUP, 100, 2);
             game.setPvpEnable(true);
-            game.broadcastMessage(ChatColor.GOLD + "PvP is enabled !");
+            game.broadcastMessage("step.pvpStep.done.broadcast", "PvP is enabled !", true);
         } else if (seconds == 10 || seconds <= 5) {
             playersPlaySound(Sound.ORB_PICKUP, 100, 1);
-            game.broadcastMessage("PvP will be active in " + ChatColor.RED + seconds + " second" + ((seconds > 1) ? "s" : ""));
+            game.broadcastMessage("step.pvpStep.broadcast", "PvP will be active in &c%s second%s", true,
+                    seconds, (seconds > 1) ? "s" : "");
         }
     }
 
     @Override
     public String scoreBoardGameStatus(Player player) {
-        return ChatColor.GRAY.toString() + "PvP in " + ChatColor.RED.toString() +  StepUtil.secondToString(getEndSeconds());
+        return Lang.getMessage(player, "step.pvpStep.scoreboard", "&7PvP in &c%s", true,
+                StepUtil.secondToString(getEndSeconds()));
     }
 
     public static PvpStep create(Game game) {

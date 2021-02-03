@@ -1,5 +1,7 @@
 package fr.mrcubee.survivalgames;
 
+import fr.mrcubee.langlib.Lang;
+import fr.mrcubee.survivalgames.command.LangCommand;
 import fr.mrcubee.survivalgames.listeners.RegisterListeners;
 import fr.mrcubee.survivalgames.step.StepManager;
 import fr.mrcubee.survivalgames.step.steps.FeastStep;
@@ -12,10 +14,9 @@ import fr.mrcubee.world.WorldSpawnSetup;
 import java.io.File;
 
 import net.arkadgames.survivalgame.sql.DataBaseManager;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SurvivalGames extends JavaPlugin {
@@ -39,9 +40,17 @@ public class SurvivalGames extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		LangCommand langCommand = new LangCommand();
+		PluginCommand pluginCommand;
 		StepManager stepManager;
 
+		Lang.setDefaultLang(Lang.EN_US);
 		this.game.init();
+
+		// **Commands** //
+		pluginCommand = getCommand("lang");
+		pluginCommand.setExecutor(langCommand);
+		pluginCommand.setTabCompleter(langCommand);
 
 		// **STEPS** //
 		stepManager = this.game.getStepManager();

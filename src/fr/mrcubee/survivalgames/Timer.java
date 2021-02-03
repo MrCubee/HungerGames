@@ -1,11 +1,13 @@
 package fr.mrcubee.survivalgames;
 
+import fr.mrcubee.langlib.Lang;
 import fr.mrcubee.survivalgames.step.Step;
 import fr.mrcubee.survivalgames.step.StepManager;
 import net.arkadgames.survivalgame.sql.DataBaseManager;
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Timer extends BukkitRunnable {
@@ -30,6 +32,13 @@ public class Timer extends BukkitRunnable {
         });
     }
 
+    private void broadcastMessage(String messageId, String rescueMessage, boolean color, Object... objects) {
+        if (messageId == null || rescueMessage == null)
+            return;
+        for (Player player : Bukkit.getOnlinePlayers())
+            player.sendMessage(Lang.getMessage(player, messageId, rescueMessage, color, objects));
+    }
+
     private void waiting() {
         if (this.game.isForceStart() || this.game.getNumberPlayer() >= this.game.getGameSetting().getMinPlayer())
             this.game.setGameStats(GameStats.STARTING);
@@ -48,7 +57,8 @@ public class Timer extends BukkitRunnable {
             this.game.setGameStats(GameStats.DURING);
         } else if (seconds == 10 || seconds <= 5) {
             playersPlaySound(Sound.ORB_PICKUP, 100, 1);
-            this.game.broadcastMessage(ChatColor.GOLD + "The game starts in " + ChatColor.RED + seconds + " second" + ((seconds > 1) ? "s" : ""));
+            game.broadcastMessage("broadcast.starting", "&6The game starts in &c%s second%s", true,
+                    seconds, (seconds > 1) ? "s" : "");
         }
     }
 
@@ -76,7 +86,8 @@ public class Timer extends BukkitRunnable {
             this.game.setGameStats(GameStats.CLOSING);
         else if (seconds == 10 || seconds <= 5) {
             playersPlaySound(Sound.ORB_PICKUP, 100, 1);
-            this.game.broadcastMessage(ChatColor.GOLD + "Restart the server in " + ChatColor.RED + seconds + " second" + ((seconds > 1) ? "s" : ""));
+            game.broadcastMessage("broadcast.restarting", "&6Restart the server in &c%s second%s", true,
+                    seconds, (seconds > 1) ? "s" : "");
         }
     }
 
