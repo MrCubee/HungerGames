@@ -1,12 +1,9 @@
 package fr.mrcubee.survivalgames.kit;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Arrays;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.mrcubee.survivalgames.SurvivalGamesAPI;
 
@@ -14,72 +11,29 @@ public class KitMenu {
 
     private static Kit[] getKits(int page) {
         KitManager kitManager = SurvivalGamesAPI.getGame().getKitManager();
-        String[] kitNames = kitManager.getKitsNames();
-        Kit[] kits;
+        Kit[] kits = kitManager.getKits();
+        Kit[] result;
         int start = page * 45;
-        int number = (kitNames.length > 45) ? 45 : kitNames.length;
+        int number;
 
-        if (start < 0 || start >= kitNames.length)
+        if (start < 0 || start >= kits.length)
             return null;
-        kits = new Kit[number];
-        for (int i = 0; i < number; i++)
-            kits[i] = kitManager.getKitByName(kitNames[start + i]);
-        return kits;
+        number = Math.min(54, kits.length);
+        result = new Kit[number];
+        System.arraycopy(kits, start, result, 0, number);
+        return result;
     }
 
-    private static ItemStack getItem(Kit kit) {
-        ItemStack itemStack = kit.getItemStack();
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        List<String> lores = new ArrayList<String>();
-
-        itemMeta.setDisplayName(kit.getName());
-        if (kit.getDescription() != null && kit.getDescription().length() > 0) {
-            String[] lines = kit.getDescription().split("\n");
-            for (String line : lines)
-                lores.add(line);
-        }
-        itemMeta.setLore(lores);
-        itemStack.setItemMeta(itemMeta);
-        return itemStack;
-    }
-
-    private static void fillInventory(Kit[] kits, Inventory inventory) {
-        ItemStack kitItem;
-
-        if (kits == null || inventory == null)
-            return;
-        for (Kit kit : kits) {
-            kitItem = getItem(kit);
-            inventory.addItem(kitItem);
-        }
-    }
-
-    public static Inventory getInventory(int page) {
+    public static Inventory getInventory(Player player, int page) {
         Kit[] kits;
         Inventory inventory;
-        int length;
         int size;
 
-        if (page < 0 || (kits = getKits(page)) == null)
+        if (player == null || page < 0 || (kits = getKits(page)) == null)
             return null;
-        if ((length = kits.length) <= 9)
-            size = 9;
-        else if ((length / 9) <= 5)
-            size = ((length / 9) + ((length % 9 == 0) ? 0 : 1)) * 9;
-        else
-            size = 54;
+        size = Math.max(1, (kits.length / 9) + 1) * 9;
         inventory = Bukkit.createInventory(null, size, SurvivalGamesAPI.getGame().getGameSetting().getMenuKitName());
-        fillInventory(kits, inventory);
+        Arrays.asList(kits).forEach(kit -> inventory.addItem(kit.getItemStack(player)));
         return inventory;
     }
-
-    public static int getMaxPage() {
-        KitManager kitManager = SurvivalGamesAPI.getGame().getKitManager();
-        int totalKits = kitManager.getKitsNames().length;
-
-        if (totalKits < 1)
-            return 0;
-        return ((totalKits / 45) + ((totalKits % 2 == 0) ? 0 : 1));
-    }
-
 }

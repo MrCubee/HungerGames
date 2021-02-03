@@ -38,7 +38,7 @@ public class PlayerDeath implements Listener {
         if (kits == null || kits.length <= 0)
             return "no kit";
         stringBuilder = new StringBuilder();
-        stringBuilder.append(kits[0].getName());
+        stringBuilder.append(kits[0].getName(player));
         for (int i = 1; i < kits.length; i++) {
             stringBuilder.append(ChatColor.GRAY.toString());
             stringBuilder.append(", ");

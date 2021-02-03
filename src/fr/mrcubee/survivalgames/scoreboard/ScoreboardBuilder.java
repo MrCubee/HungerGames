@@ -68,7 +68,7 @@ public final class ScoreboardBuilder {
         } else if ((kit = game.getKitManager().getKitByPlayer(player)) == null || kit.length == 0)
             kitName = Lang.getMessage(player, "kit.noKit.name", "No kit", true);
         else
-            kitName = kit[0].getName();
+            kitName = kit[0].getName(player);
         result.add(Lang.getMessage(player, "scoreboard.kit", "&fKit: &7%s", true, kitName));
     }
 

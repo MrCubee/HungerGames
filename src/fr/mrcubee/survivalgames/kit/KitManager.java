@@ -55,7 +55,8 @@ public class KitManager implements CommandExecutor {
     }
 
     public boolean registerKit(Kit kit) {
-        if (kit == null || StringUtils.isWhitespace(kit.getName()) || kit.getItemStack() == null)
+        if (kit == null || StringUtils.isWhitespace(kit.getNameId()) || StringUtils.isWhitespace(kit.getDescriptionId())
+        || kit.getItemStack() == null)
             return false;
         return this.kits.add(kit);
     }
@@ -92,13 +93,16 @@ public class KitManager implements CommandExecutor {
         return true;
     }
 
+    public Kit[] getKits() {
+        return this.kits.toArray(new Kit[0]);
+    }
 
     public String[] getKitsNames() {
         String[] names = new String[this.kits.size()];
         int index = 0;
 
         for (Kit kit : this.kits)
-            names[index++] = kit.getName();
+            names[index++] = kit.getNameId();
         return names;
     }
 
@@ -106,7 +110,7 @@ public class KitManager implements CommandExecutor {
         if (name == null || StringUtils.isWhitespace(name))
             return null;
         for (Kit kit : kits)
-            if (kit.getName().equals(name))
+            if (kit.getNameId().equals(name))
                 return kit;
         return null;
     }
@@ -156,7 +160,7 @@ public class KitManager implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Player do not exist !");
             else {
                 kits = getKitByPlayer(target);
-                sender.sendMessage(ChatColor.GOLD + "Kit: " + ChatColor.RESET + (((kits == null || kits.length < 1) ? "No Kit" : kits[0].getName())));
+                sender.sendMessage(ChatColor.GOLD + "Kit: " + ChatColor.RESET + (((kits == null || kits.length < 1) ? "No Kit" : kits[0].getNameId())));
             }
         }
         return true;

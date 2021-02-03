@@ -27,7 +27,7 @@ public class Game {
     private final DataBaseManager dataBaseManager;
     private final KitManager kitManager;
     private final StepManager stepManager;
-    private PluginScoreBoardManager pluginScoreBoardManager;
+    private final PluginScoreBoardManager pluginScoreBoardManager;
     private World gameWorld;
     private SpawnTerrainForming spawnTerrainForming;
     private GameStats gameStats;
@@ -84,7 +84,7 @@ public class Game {
             return;
         for (Player player : Bukkit.getOnlinePlayers()) {
             prefix = Lang.getMessage(player, "broadcast.prefix", "&6[&cSurvivalGames&6]", true);
-            player.sendMessage(prefix + " " + Lang.getMessage(messageId, rescueMessage, color, objects));
+            player.sendMessage(prefix + " " + Lang.getMessage(player, messageId, rescueMessage, color, objects));
         }
     }
 

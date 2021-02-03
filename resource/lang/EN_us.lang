@@ -1,0 +1,42 @@
+############################ Scoreboard ############################
+
+scoreboard.gameStatus.title=&fGame Status:
+scoreboard.gameStatus.waiting=&aWaiting...
+scoreboard.gameStatus.start=&6Start in &c%s
+scoreboard.gameStatus.during=&7%s
+scoreboard.gameStatus.restart=&6Restart in &c%s
+
+scoreboard.rank=&fRank: &7%d#
+
+scoreboard.players.waiting.notEnough=&fPlayers: &c%d&7/&a%d
+scoreboard.players.waiting.enough=&fPlayers: &a%d&7/&a%d
+scoreboard.players.during=&fPlayers: &a%d
+
+scoreboard.kit=&fKit: &7%s
+
+scoreboard.worldBorder=&fBorder: &9&o+%d -%d
+
+scoreboard.serverIp=&e%s
+
+############################### Step ###############################
+
+step.pvpStep.broadcast=PvP will be active in &c%s second%s
+step.pvpStep.done.broadcast=PvP is enabled !
+step.pvpStep.scoreboard=&7PvP in &c%s
+
+step.feastStep.broadcast=Feast in &c%s
+step.feastStep.scoreboard=&cFeast in &6%s
+
+############################ Broadcast #############################
+
+broadcast.prefix=&6[&cSurvivalGames&6]
+broadcast.starting=The game starts in &c%s second%s
+broadcast.restarting=Restart the server in &c%s second%s
+broadcast.player.death=&c%s(&7%s&c) &6is Dead ! There are &c%d players left.
+broadcast.player.lastDeath=&c%s(&7%s&c) &6is Dead !
+broadcast.player.win=&c%s &6WIN THE GAME !!!
+
+################################ Kit ###############################
+
+kit.spectator.name=Spectator
+kit.noKit.name=No kit

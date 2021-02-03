@@ -46,7 +46,7 @@ public class KitMenuManager implements Listener {
         player = (Player) event.getWhoClicked();
         survivalGames.getGame().getKitManager().removeKit(player);
         kit.addPlayer(player);
-        event.getWhoClicked().sendMessage(ChatColor.GOLD + "You took the " + ChatColor.RED + kit.getName() + ChatColor.GOLD + " kit.");
+        event.getWhoClicked().sendMessage(ChatColor.GOLD + "You took the " + ChatColor.RED + kit.getName((Player) event.getWhoClicked()) + ChatColor.GOLD + " kit.");
     }
 
 }

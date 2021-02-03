@@ -26,12 +26,13 @@ public class PlayerInteract implements Listener {
 	public void playerInteractEvent(PlayerInteractEvent event) {
 		Game game = this.survivalGames.getGame();
 		GameStats gameStats = game.getGameStats();
+		Inventory inventory;
 
 		if ((!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 		|| event.getItem() == null)
 			return;
 		if ((gameStats == GameStats.WAITING) || (gameStats == GameStats.STARTING)) {
-			Inventory inventory = KitMenu.getInventory(0);
+			inventory = KitMenu.getInventory(event.getPlayer(), 0);
 			if (inventory != null)
 				event.getPlayer().openInventory(inventory);
 			return;
