@@ -1,0 +1,42 @@
+############################ Scoreboard ############################
+
+scoreboard.gameStatus.title=&f游戏状态:
+scoreboard.gameStatus.waiting=&a等待玩家...
+scoreboard.gameStatus.start=&6从&c%s&6开始
+scoreboard.gameStatus.during=&7%s
+scoreboard.gameStatus.restart=&6在&c%s&6重新启动
+
+scoreboard.rank=&f排行: &7%d#
+
+scoreboard.players.waiting.notEnough=&f玩家: &c%d&7/&a%d
+scoreboard.players.waiting.enough=&f玩家: &a%d&7/&a%d
+scoreboard.players.during=&f玩家: &a%d
+
+scoreboard.kit=&f套件: &7%s
+
+scoreboard.worldBorder=&f边境: &9&o+%d -%d
+
+scoreboard.serverIp=&e%s
+
+############################### Step ###############################
+
+step.pvpStep.broadcast=&6战斗在&c%s&6年启动
+step.pvpStep.done.broadcast=战斗激活
+step.pvpStep.scoreboard=&7战斗在&c%s&7年启动
+
+step.feastStep.broadcast=&c%s&6人宴会
+step.feastStep.scoreboard=&6%s&c人宴会
+
+############################ Broadcast #############################
+
+broadcast.prefix=&6[&cSurvivalGames&6]
+broadcast.starting=&6游戏在&c%s&6秒内开始
+broadcast.restarting=&c%s&6秒后重启服务器
+broadcast.player.death=&c%s(&7%s&c) &6死了 ! 剩余&c%d&6位玩家。
+broadcast.player.lastDeath=&c%s(&7%s&c) &6死了 !
+broadcast.player.win=&c%s &6赢得比赛！
+
+################################ Kit ###############################
+
+kit.spectator.name=观众
+kit.noKit.name=不带套件
