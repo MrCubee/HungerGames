@@ -85,8 +85,6 @@ public abstract class Kit implements Listener {
     public ItemStack getItemStack(Player player) {
         ItemStack itemStack;
         ItemMeta itemMeta;
-        String name;
-        String description;
 
         if (player == null)
             return null;
@@ -96,7 +94,7 @@ public abstract class Kit implements Listener {
         itemStack = this.itemStack.clone();
         itemMeta.setDisplayName(getDisplayName(player));
         itemMeta.setLore(Arrays.asList(getDescription(player).split("\n")));
-        this.itemStack.setItemMeta(itemMeta);
+        itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
 
