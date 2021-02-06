@@ -13,7 +13,7 @@ import fr.mrcubee.survivalgames.SurvivalGames;
 
 public class KitMenuManager implements Listener {
 
-    private SurvivalGames survivalGames;
+    private final SurvivalGames survivalGames;
 
     public KitMenuManager(SurvivalGames survivalGames) {
         this.survivalGames = survivalGames;
@@ -39,14 +39,14 @@ public class KitMenuManager implements Listener {
         if (itemStack == null)
             return;
         itemMeta = itemStack.getItemMeta();
-        kit = survivalGames.getGame().getKitManager().getKitByName(itemMeta.getDisplayName());
+        kit = survivalGames.getGame().getKitManager().getKitByDisplayName((Player) event.getWhoClicked(), itemMeta.getDisplayName());
         event.getWhoClicked().closeInventory();
         if (kit == null)
             return;
         player = (Player) event.getWhoClicked();
         survivalGames.getGame().getKitManager().removeKit(player);
         kit.addPlayer(player);
-        event.getWhoClicked().sendMessage(ChatColor.GOLD + "You took the " + ChatColor.RED + kit.getName((Player) event.getWhoClicked()) + ChatColor.GOLD + " kit.");
+        event.getWhoClicked().sendMessage(ChatColor.GOLD + "You took the " + ChatColor.RED + kit.getDisplayName((Player) event.getWhoClicked()) + ChatColor.GOLD + " kit.");
     }
 
 }

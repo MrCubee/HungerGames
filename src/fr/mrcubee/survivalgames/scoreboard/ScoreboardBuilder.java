@@ -48,11 +48,11 @@ public final class ScoreboardBuilder {
 
         if (game.getGameStats().ordinal() < 3) {
             if (game.getNumberPlayer() < game.getGameSetting().getMinPlayer()) {
-                result.add(Lang.getMessage(player, "scoreboard.players.waiting.notEnough", "&fPlayers: &c%d&7/&a", true,
+                result.add(Lang.getMessage(player, "scoreboard.players.waiting.notEnough", "&fPlayers: &c%d&7/&a%d", true,
                         game.getNumberPlayer(), game.getGameSetting().getMinPlayer()));
                 return;
             }
-            result.add(Lang.getMessage(player, "scoreboard.players.waiting.enough", "&fPlayers: &a%d&7/&a", true,
+            result.add(Lang.getMessage(player, "scoreboard.players.waiting.enough", "&fPlayers: &a%d&7/&a%d", true,
                     game.getNumberPlayer(), game.getGameSetting().getMinPlayer()));
             return;
         }
@@ -68,7 +68,7 @@ public final class ScoreboardBuilder {
         } else if ((kit = game.getKitManager().getKitByPlayer(player)) == null || kit.length == 0)
             kitName = Lang.getMessage(player, "kit.noKit.name", "No kit", true);
         else
-            kitName = kit[0].getName(player);
+            kitName = kit[0].getDisplayName(player);
         result.add(Lang.getMessage(player, "scoreboard.kit", "&fKit: &7%s", true, kitName));
     }
 

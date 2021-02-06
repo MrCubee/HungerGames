@@ -10,12 +10,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public abstract class Kit implements Listener {
 
+    private final String name;
     private final String nameId;
     private final String descriptionId;
     private final ItemStack itemStack;
     private final Set<Player> players;
 
-    protected Kit(String nameId, String descriptionId, ItemStack itemStack) {
+    protected Kit(String name, String nameId, String descriptionId, ItemStack itemStack) {
+        this.name = name;
         this.nameId = nameId;
         this.descriptionId = descriptionId;
         this.itemStack = itemStack;
@@ -60,28 +62,21 @@ public abstract class Kit implements Listener {
 
     public abstract boolean canLostItem(ItemStack itemStack);
 
+    public String getName() {
+        return this.name;
+    }
+
     public String getNameId() {
         return this.nameId;
     }
 
-    public String getName(Player player) {
-        String value;
-
-        if (player == null)
-            return null;
-        value = Lang.getMessage(player, this.nameId, "&cERROR", true);
-        return value;
-    }
+    public abstract String getDisplayName(Player player);
 
     public String getDescriptionId() {
         return this.descriptionId;
     }
 
-    public String getDescription(Player player) {
-        if (player == null)
-            return null;
-        return Lang.getMessage(player, this.descriptionId, "&cERROR", true);
-    }
+    public abstract String getDescription(Player player);
 
     public ItemStack getItemStack() {
         return this.itemStack;
@@ -95,14 +90,12 @@ public abstract class Kit implements Listener {
 
         if (player == null)
             return null;
-        name = Lang.getMessage(player, this.nameId, "&cERROR", true);
-        description = Lang.getMessage(player, this.descriptionId, "&cERROR", true);
         itemMeta = this.itemStack.getItemMeta();
         if (itemMeta == null)
             return null;
         itemStack = this.itemStack.clone();
-        itemMeta.setDisplayName(name);
-        itemMeta.setLore(Arrays.asList(description.split("\n")));
+        itemMeta.setDisplayName(getDisplayName(player));
+        itemMeta.setLore(Arrays.asList(getDescription(player).split("\n")));
         this.itemStack.setItemMeta(itemMeta);
         return itemStack;
     }

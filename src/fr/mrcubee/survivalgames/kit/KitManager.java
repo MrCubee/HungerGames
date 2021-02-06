@@ -55,8 +55,7 @@ public class KitManager implements CommandExecutor {
     }
 
     public boolean registerKit(Kit kit) {
-        if (kit == null || StringUtils.isWhitespace(kit.getNameId()) || StringUtils.isWhitespace(kit.getDescriptionId())
-        || kit.getItemStack() == null)
+        if (kit == null || StringUtils.isWhitespace(kit.getName()) || kit.getItemStack() == null)
             return false;
         return this.kits.add(kit);
     }
@@ -97,12 +96,25 @@ public class KitManager implements CommandExecutor {
         return this.kits.toArray(new Kit[0]);
     }
 
-    public String[] getKitsNames() {
+    public String[] getKitNames() {
         String[] names = new String[this.kits.size()];
         int index = 0;
 
         for (Kit kit : this.kits)
-            names[index++] = kit.getNameId();
+            names[index++] = kit.getName();
+        return names;
+    }
+
+    public String[] getKitDisplayNames(Player player) {
+        String[] names;
+        int index;
+
+        if (player == null)
+            return null;
+        index = 0;
+        names = new String[this.kits.size()];
+        for (Kit kit : this.kits)
+            names[index++] = kit.getDisplayName(player);
         return names;
     }
 
@@ -110,7 +122,16 @@ public class KitManager implements CommandExecutor {
         if (name == null || StringUtils.isWhitespace(name))
             return null;
         for (Kit kit : kits)
-            if (kit.getNameId().equals(name))
+            if (kit.getName().equals(name))
+                return kit;
+        return null;
+    }
+
+    public Kit getKitByDisplayName(Player player, String name) {
+        if (player == null || name == null)
+            return null;
+        for (Kit kit : kits)
+            if (name.equalsIgnoreCase(kit.getDisplayName(player)))
                 return kit;
         return null;
     }
@@ -160,7 +181,7 @@ public class KitManager implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Player do not exist !");
             else {
                 kits = getKitByPlayer(target);
-                sender.sendMessage(ChatColor.GOLD + "Kit: " + ChatColor.RESET + (((kits == null || kits.length < 1) ? "No Kit" : kits[0].getNameId())));
+                sender.sendMessage(ChatColor.GOLD + "Kit: " + ChatColor.RESET + (((kits == null || kits.length < 1) ? "No Kit" : kits[0].getName())));
             }
         }
         return true;
