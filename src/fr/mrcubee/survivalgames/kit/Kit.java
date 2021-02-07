@@ -11,15 +11,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 public abstract class Kit implements Listener {
 
     private final String name;
-    private final String nameId;
-    private final String descriptionId;
     private final ItemStack itemStack;
     private final Set<Player> players;
 
-    protected Kit(String name, String nameId, String descriptionId, ItemStack itemStack) {
+    protected Kit(String name, ItemStack itemStack) {
         this.name = name;
-        this.nameId = nameId;
-        this.descriptionId = descriptionId;
         this.itemStack = itemStack;
         this.players = new HashSet<Player>();
     }
@@ -66,15 +62,7 @@ public abstract class Kit implements Listener {
         return this.name;
     }
 
-    public String getNameId() {
-        return this.nameId;
-    }
-
     public abstract String getDisplayName(Player player);
-
-    public String getDescriptionId() {
-        return this.descriptionId;
-    }
 
     public abstract String getDescription(Player player);
 
@@ -83,17 +71,25 @@ public abstract class Kit implements Listener {
     }
 
     public ItemStack getItemStack(Player player) {
+        String displayName;
+        String description;
         ItemStack itemStack;
         ItemMeta itemMeta;
 
         if (player == null)
             return null;
+        displayName = getDisplayName(player);
+        if (displayName == null)
+            return null;
+        description = getDescription(player);
+        if (description == null)
+            return null;
         itemMeta = this.itemStack.getItemMeta();
         if (itemMeta == null)
             return null;
         itemStack = this.itemStack.clone();
-        itemMeta.setDisplayName(getDisplayName(player));
-        itemMeta.setLore(Arrays.asList(getDescription(player).split("\n")));
+        itemMeta.setDisplayName(displayName);
+        itemMeta.setLore(Arrays.asList(description.split("\n")));
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
@@ -110,6 +106,6 @@ public abstract class Kit implements Listener {
 
     @Override
     public int hashCode() {
-        return ((this.nameId == null) ? 0 : this.nameId.hashCode());
+        return (this.name != null) ? this.name.hashCode() : 0;
     }
 }

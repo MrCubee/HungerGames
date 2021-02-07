@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import fr.mrcubee.survivalgames.SurvivalGamesAPI;
+import org.bukkit.inventory.ItemStack;
 
 public class KitMenu {
 
@@ -33,7 +34,12 @@ public class KitMenu {
             return null;
         size = Math.max(1, (kits.length / 9) + 1) * 9;
         inventory = Bukkit.createInventory(null, size, SurvivalGamesAPI.getGame().getGameSetting().getMenuKitName());
-        Arrays.asList(kits).forEach(kit -> inventory.addItem(kit.getItemStack(player)));
+        Arrays.asList(kits).forEach(kit -> {
+            ItemStack itemStack = kit.getItemStack(player);
+
+            if (itemStack != null)
+                inventory.addItem(itemStack);
+        });
         return inventory;
     }
 }
