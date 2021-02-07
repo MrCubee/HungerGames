@@ -73,7 +73,6 @@ public class PlayerDeath implements Listener {
     public void playerDeathEvent(PlayerDeathEvent event) {
         Game game = this.survivalGames.getGame();
         KitManager kitManager;
-        String kitsName;
         PlayerData playerData;
         Score score;
 
@@ -85,7 +84,6 @@ public class PlayerDeath implements Listener {
             (score == null) ? 1 : score.getScore() + 1);
         }
         kitManager = game.getKitManager();
-        kitsName = getKitsName(kitManager, event.getEntity());
         playerData = game.getDataBaseManager().getPlayerData(event.getEntity().getUniqueId());
         if (playerData != null) {
             playerData.setLastWin(false);
@@ -102,11 +100,11 @@ public class PlayerDeath implements Listener {
             event.setDeathMessage(null);
             for (Player player : Bukkit.getOnlinePlayers())
                 player.sendMessage(Lang.getMessage(player, "broadcast.player.death", "&c%s(&7%s&c) &6is Dead ! There are &c%d players left.", true,
-                        event.getEntity().getName(), kitsName, game.getNumberPlayer()));
+                        event.getEntity().getName(), getKitsName(kitManager, player), game.getNumberPlayer()));
         } else {
             for (Player player : Bukkit.getOnlinePlayers())
                 player.sendMessage(Lang.getMessage(player, "broadcast.player.lastDeath", "&c%s(&7%s&c) &6is Dead !", true,
-                        event.getEntity().getName(), kitsName));
+                        event.getEntity().getName(), getKitsName(kitManager, player)));
             victory(game);
         }
         game.getKitManager().removeKit(event.getEntity());

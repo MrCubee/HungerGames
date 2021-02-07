@@ -44,7 +44,7 @@ public class SurvivalGames extends JavaPlugin {
 		PluginCommand pluginCommand;
 		StepManager stepManager;
 
-		Lang.setDefaultLang(Lang.EN_US);
+		Lang.setDefaultLang("EN_us");
 		this.game.init();
 
 		// **Commands** //

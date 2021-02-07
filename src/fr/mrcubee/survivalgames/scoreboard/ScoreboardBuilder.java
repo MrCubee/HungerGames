@@ -100,5 +100,4 @@ public final class ScoreboardBuilder {
         getServerIP(player, result);
         return result;
     }
-
 }

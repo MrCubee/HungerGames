@@ -9,13 +9,30 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class LangCommand implements CommandExecutor, TabCompleter {
 
+    private final List<String> langs;
+
+    public LangCommand() {
+        this.langs = Arrays.asList("EN_us", "FR_fr", "ZH_zh");
+    }
+
+    private String getLang(String langString) {
+        if (langString == null)
+            return null;
+        for (String lang : this.langs) {
+            if (lang.equalsIgnoreCase(langString))
+                return lang;
+        }
+        return null;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Lang lang;
+        String lang;
         int value;
 
         if (!(sender instanceof Player) ||  args.length < 1)
@@ -32,7 +49,7 @@ public class LangCommand implements CommandExecutor, TabCompleter {
             Lang.clean(value);
             return true;
         }
-        lang = Lang.getFromName(args[0]);
+        lang = getLang(args[0]);
         if (lang == null) {
             sender.sendMessage(ChatColor.RED + "Lang not found.");
             return true;
@@ -46,8 +63,7 @@ public class LangCommand implements CommandExecutor, TabCompleter {
         ArrayList<String> result = new ArrayList<String>();
 
         if (args.length == 1) {
-            for (Lang lang : Lang.values())
-                result.add(lang.toString());
+            result.addAll(this.langs);
             result.removeIf(value -> !value.toLowerCase().startsWith(args[0].toLowerCase()));
         }
         return result;
