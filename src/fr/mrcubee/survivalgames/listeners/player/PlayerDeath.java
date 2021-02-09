@@ -28,17 +28,19 @@ public class PlayerDeath implements Listener {
         this.survivalGames = survivalGames;
     }
 
-    private String getKitsName(KitManager kitManager, Player player) {
+    private String getKitsName(KitManager kitManager, Player player, Player displayPlayer) {
         Kit[] kits;
         StringBuilder stringBuilder;
 
         if (kitManager == null || player == null)
             return null;
+        if (displayPlayer == null)
+            displayPlayer = player;
         kits = kitManager.getKitByPlayer(player);
         if (kits == null || kits.length <= 0)
-            return "no kit";
+            return Lang.getMessage(displayPlayer, "kit.noKit.name", "No kit", true);
         stringBuilder = new StringBuilder();
-        stringBuilder.append(kits[0].getDisplayName(player));
+        stringBuilder.append(kits[0].getDisplayName(displayPlayer));
         for (int i = 1; i < kits.length; i++) {
             stringBuilder.append(ChatColor.GRAY.toString());
             stringBuilder.append(", ");
@@ -55,8 +57,6 @@ public class PlayerDeath implements Listener {
         players = game.getPlayerInGame();
         if (players == null || players.isEmpty())
             return;
-        for (Player player : Bukkit.getOnlinePlayers())
-            player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 100, 1);
         players.forEach(player -> {
             PlayerData playerData = game.getDataBaseManager().getPlayerData(player.getUniqueId());
 
@@ -95,16 +95,18 @@ public class PlayerDeath implements Listener {
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
         game.addSpectator(event.getEntity());
         if (game.getNumberPlayer() > 1) {
-            for (Player player : Bukkit.getOnlinePlayers())
-                player.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 100, 1);
             event.setDeathMessage(null);
-            for (Player player : Bukkit.getOnlinePlayers())
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 100, 1);
                 player.sendMessage(Lang.getMessage(player, "broadcast.player.death", "&c%s(&7%s&c) &6is Dead ! There are &c%d players left.", true,
-                        event.getEntity().getName(), getKitsName(kitManager, player), game.getNumberPlayer()));
+                        event.getEntity().getName(), getKitsName(kitManager, event.getEntity(), player), game.getNumberPlayer()));
+            }
         } else {
-            for (Player player : Bukkit.getOnlinePlayers())
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 100, 1);
                 player.sendMessage(Lang.getMessage(player, "broadcast.player.lastDeath", "&c%s(&7%s&c) &6is Dead !", true,
-                        event.getEntity().getName(), getKitsName(kitManager, player)));
+                        event.getEntity().getName(), getKitsName(kitManager, event.getEntity(), player)));
+            }
             victory(game);
         }
         game.getKitManager().removeKit(event.getEntity());
