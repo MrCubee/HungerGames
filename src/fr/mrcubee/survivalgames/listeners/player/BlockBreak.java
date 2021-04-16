@@ -10,7 +10,7 @@ import fr.mrcubee.survivalgames.SurvivalGames;
 
 public class BlockBreak implements Listener {
 	
-	private SurvivalGames survivalGames;
+	private final SurvivalGames survivalGames;
 	
 	public BlockBreak(SurvivalGames survivalGames) {
 		this.survivalGames = survivalGames;
@@ -19,6 +19,7 @@ public class BlockBreak implements Listener {
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void blockBreakEvent(BlockBreakEvent event) {
 		GameStats gameStats = survivalGames.getGame().getGameStats();
+
 		if (gameStats != GameStats.DURING) {
 			event.setCancelled(true);
 		}

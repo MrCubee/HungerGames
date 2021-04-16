@@ -19,6 +19,7 @@ public class InventoryClick implements Listener {
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void inventoryClickEvent(InventoryClickEvent event) {
 		GameStats gameStats = survivalGames.getGame().getGameStats();
+
 		if (gameStats != GameStats.DURING)
 			event.setCancelled(true);
 	}

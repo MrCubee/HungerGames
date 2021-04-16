@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
  * @author MrCubee
  */
 public class Game {
+
     private final SurvivalGames survivalGames;
     private final GameSetting gameSetting;
     private final DataBaseManager dataBaseManager;
