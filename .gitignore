@@ -1,4 +1,7 @@
+# Intellij Idea
 out/
 .idea/
-target/
 **.iml
+
+# Maven
+target/
