@@ -1,5 +1,6 @@
 package fr.mrcubee.survivalgames;
 
+import fr.mrcubee.bukkit.packet.GenericListenerManager;
 import fr.mrcubee.langlib.Lang;
 import fr.mrcubee.survivalgames.command.LangCommand;
 import fr.mrcubee.survivalgames.listeners.RegisterListeners;
@@ -23,6 +24,7 @@ public class SurvivalGames extends JavaPlugin {
 
 	private Game game;
 	private Timer timer;
+	private GenericListenerManager genericListenerManager;
 
 	@Override
 	public void onLoad() {
@@ -36,6 +38,7 @@ public class SurvivalGames extends JavaPlugin {
 		FileUtil.delete(worldFile);
 		FileUtil.delete(netherFile);
 		FileUtil.delete(endFile);
+		this.genericListenerManager = GenericListenerManager.create("SurvivalGames");
 	}
 
 	@Override
@@ -107,5 +110,9 @@ public class SurvivalGames extends JavaPlugin {
 
 	public Game getGame() {
 		return this.game;
+	}
+
+	public GenericListenerManager getGenericListenerManager() {
+		return this.genericListenerManager;
 	}
 }

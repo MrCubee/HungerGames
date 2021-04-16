@@ -1,5 +1,6 @@
 package fr.mrcubee.survivalgames.listeners.player;
 
+import fr.mrcubee.bukkit.packet.GenericListenerManager;
 import fr.mrcubee.scoreboard.Score;
 import fr.mrcubee.survivalgames.Game;
 import net.arkadgames.survivalgame.sql.DataBaseManager;
@@ -37,7 +38,10 @@ public class PlayerQuit implements Listener {
     public void playerQuitEvent(PlayerQuitEvent event) {
         Game game = this.survivalGames.getGame();
         DataBaseManager dataBaseManager = game.getDataBaseManager();
+        GenericListenerManager genericListenerManager = this.survivalGames.getGenericListenerManager();
 
+        if (genericListenerManager != null)
+            genericListenerManager.removePlayer(event.getPlayer());
         if (game.getGameStats().ordinal() > 2) {
             event.setQuitMessage(null);
             if (!game.isSpectator(event.getPlayer()) && event.getPlayer().getHealth() > 0)
