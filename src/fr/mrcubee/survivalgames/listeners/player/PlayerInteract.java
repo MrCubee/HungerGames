@@ -1,6 +1,9 @@
 package fr.mrcubee.survivalgames.listeners.player;
 
+import fr.mrcubee.fastgui.inventory.FastInventory;
 import fr.mrcubee.survivalgames.Game;
+import fr.mrcubee.survivalgames.kit.KitManager;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,16 +28,17 @@ public class PlayerInteract implements Listener {
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void playerInteractEvent(PlayerInteractEvent event) {
 		Game game = this.survivalGames.getGame();
+		KitManager kitManager = game.getKitManager();
 		GameStats gameStats = game.getGameStats();
-		Inventory inventory;
+		FastInventory[] inventories;
 
 		if ((!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 		|| event.getItem() == null)
 			return;
 		if ((gameStats == GameStats.WAITING) || (gameStats == GameStats.STARTING)) {
-			inventory = KitMenu.getInventory(event.getPlayer(), 0);
-			if (inventory != null)
-				event.getPlayer().openInventory(inventory);
+			inventories = kitManager.getKitInventories();
+			if (inventories != null && inventories.length > 0)
+				inventories[0].openInventory(event.getPlayer(), ChatColor.YELLOW + "Kit");
 			return;
 		}
 		if (gameStats != GameStats.DURING || !event.getItem().isSimilar(game.getKitManager().getRadarItem()))

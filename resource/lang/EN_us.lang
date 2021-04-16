@@ -38,5 +38,6 @@ broadcast.player.win=&c%s &6WIN THE GAME !!!
 
 ################################ Kit ###############################
 
+kit.select=&6You took the &r%s &6kit.
 kit.spectator.name=Spectator
 kit.noKit.name=No kit

@@ -38,5 +38,6 @@ broadcast.player.win=&c%s &6赢得比赛！
 
 ################################ Kit ###############################
 
+kit.select=&6您拿了&r%s&6工具包。
 kit.spectator.name=观众
 kit.noKit.name=不带套件

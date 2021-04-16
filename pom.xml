@@ -70,6 +70,12 @@
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>fr.mrcubee.minecraft.library</groupId>
+            <artifactId>fastgui</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -79,7 +85,7 @@
     <build>
         <defaultGoal>clean install</defaultGoal>
         <sourceDirectory>src</sourceDirectory>
-        <finalName>${project.name}</finalName>
+        <finalName>${pom.artifactId}</finalName>
         <resources>
             <resource>
                 <directory>resource</directory>

@@ -2,6 +2,7 @@ package fr.mrcubee.survivalgames.kit;
 
 import java.util.*;
 
+import fr.mrcubee.fastgui.inventory.FastInventory;
 import fr.mrcubee.survivalgames.Game;
 import fr.mrcubee.survivalgames.GameStats;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +25,7 @@ public class KitManager implements CommandExecutor {
 
     private final SurvivalGames survivalGames;
     private final Set<Kit> kits;
+    private FastInventory[] kitInventories;
     private final ItemStack radarItem;
 
     public KitManager(SurvivalGames survivalGames) {
@@ -187,4 +189,14 @@ public class KitManager implements CommandExecutor {
         return true;
     }
 
+    public FastInventory[] getKitInventories() {
+        if (this.kitInventories == null)
+            this.kitInventories = KitMenu.getKitInventories();
+        return this.kitInventories;
+    }
+
+    public void clearKitInventoriesCache() {
+        this.kitInventories = null;
+        System.gc();
+    }
 }

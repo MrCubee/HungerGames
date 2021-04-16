@@ -1,35 +1,64 @@
 package fr.mrcubee.survivalgames.kit;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
+import fr.mrcubee.fastgui.inventory.Button;
 import fr.mrcubee.langlib.Lang;
+import fr.mrcubee.survivalgames.SurvivalGames;
+import fr.mrcubee.survivalgames.SurvivalGamesAPI;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public abstract class Kit implements Listener {
+public abstract class Kit implements Listener, BiConsumer<Button, HumanEntity> {
 
     private final String name;
     private final ItemStack itemStack;
     private final Set<Player> players;
+    private final BiConsumer<HumanEntity, ItemStack> itemEditor;
 
     protected Kit(String name, ItemStack itemStack) {
         this.name = name;
         this.itemStack = itemStack;
         this.players = new HashSet<Player>();
+        this.itemEditor = new BiConsumer<HumanEntity, ItemStack>() {
+            @Override
+            public void accept(HumanEntity humanEntity, ItemStack itemStack) {
+                Player player;
+                ItemMeta itemMeta;
+                String displayName;
+                String description;
+
+                if (itemStack == null || !(humanEntity instanceof Player))
+                    return;
+                player = (Player) humanEntity;
+                itemMeta = itemStack.getItemMeta();
+
+                displayName = getDisplayName(player);
+                description = getDescription(player);
+                if (displayName != null)
+                    itemMeta.setDisplayName(displayName);
+                if (description != null)
+                    itemMeta.setLore(Arrays.asList(description.split("\n")));
+                itemStack.setItemMeta(itemMeta);
+            }
+        };
     }
 
-    public void addPlayer(Player player) {
+    public boolean addPlayer(Player player) {
         if (player == null || !player.isOnline() || !canTakeKit(player))
-            return;
+            return false;
         this.players.add(player);
+        return true;
     }
 
-    public void removePlayer(Player player) {
+    public boolean removePlayer(Player player) {
         if ((player == null) || (!this.players.contains(player)))
-            return;
-        this.players.remove(player);
+            return false;
+        return this.players.remove(player);
     }
 
     public boolean containsPlayer(Player player) {
@@ -70,6 +99,10 @@ public abstract class Kit implements Listener {
         return this.itemStack;
     }
 
+    public BiConsumer<HumanEntity, ItemStack> getItemEditor() {
+        return this.itemEditor;
+    }
+
     public ItemStack getItemStack(Player player) {
         String displayName;
         String description;
@@ -100,6 +133,27 @@ public abstract class Kit implements Listener {
 
     public int getNumberPlayer() {
         return this.players.size();
+    }
+
+    @Override
+    public void accept(Button button, HumanEntity humanEntity) {
+        Player player;
+        KitManager kitManager;
+        Kit[] oldKits;
+
+        if (button == null || !(humanEntity instanceof Player))
+            return;
+        player = (Player) humanEntity;
+        kitManager = SurvivalGamesAPI.getGame().getKitManager();
+        oldKits = kitManager.getKitByPlayer(player);
+        if (addPlayer(player)) {
+            player.closeInventory();
+            if (oldKits != null) {
+                for (Kit kit : oldKits)
+                    kit.removePlayer(player);
+            }
+            player.sendMessage(Lang.getMessage(player, "kit.select", "&6You took the &r%s &6kit.", true, getDisplayName(player)));
+        }
     }
 
     public abstract void update();

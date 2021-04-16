@@ -38,5 +38,6 @@ broadcast.player.win=&c%s &6GAGNE LA PARTIE !!!
 
 ################################ Kit ###############################
 
+kit.select=&6Vous avez pris le kit &r%s&6.
 kit.spectator.name=Spectateur
 kit.noKit.name=Pas de kit
