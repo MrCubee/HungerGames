@@ -21,6 +21,7 @@ game:
       beforeTime: 600
       spawnTime: 300
 db:
+  enable: true
   host: db.mrcubee.fr
   database: survivalgames
   user: user

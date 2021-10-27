@@ -24,6 +24,9 @@ public class DataBase {
 
 	private final SurvivalGames survivalGames;
 
+	@Config(path = "db.enable")
+	private boolean enable;
+
 	@Config(path = "db.host")
 	private String host;
 
@@ -40,11 +43,14 @@ public class DataBase {
 
 	protected DataBase(SurvivalGames survivalGames) {
 		this.survivalGames = survivalGames;
+		this.enable = false;
 		PluginAnnotations.load(survivalGames, this);
 		getConnection();
 	}
 
 	protected Connection getConnection() {
+		if (!this.enable)
+			return null;
 		try {
 			if (this.connection == null || this.connection.isClosed()) {
 				this.survivalGames.getLogger().info("Connecting to " + this.toString() + "...");
@@ -56,6 +62,15 @@ public class DataBase {
 			exception.printStackTrace();
 		}
 		return this.connection;
+	}
+
+	public void disconnect() {
+		try {
+			if (this.connection == null || this.connection.isClosed()) {
+				this.connection.close();
+				this.connection = null;
+			}
+		} catch (SQLException ignored) {}
 	}
 
 	private boolean setPlayerHead(UUID uuid) {
@@ -76,7 +91,7 @@ public class DataBase {
 			return false;
 		connection = getConnection();
 		if (connection == null)
-			return false;
+			return !this.enable;
 		try {
 			statement = connection.prepareStatement("INSERT playerhead VALUES (?, ?) ON DUPLICATE KEY UPDATE data = ?");
 			statement.setString(1, uuid.toString().replaceAll("-", ""));
@@ -100,7 +115,7 @@ public class DataBase {
 			return false;
 		connection = getConnection();
 		if (connection == null)
-			return false;
+			return !this.enable;
 		try {
 			statement = connection.prepareStatement("INSERT playername VALUES (?, ?) ON DUPLICATE KEY UPDATE name = ?");
 			statement.setString(1, uuid.toString().replaceAll("-", ""));
@@ -126,7 +141,7 @@ public class DataBase {
 			return false;
 		connection = getConnection();
 		if (connection == null)
-			return false;
+			return !this.enable;
 		try {
 			statement = connection.prepareStatement("SELECT uuid FROM survivalgames WHERE uuid = ?");
 			statement.setString(1, uuid.toString().replaceAll("-", ""));
