@@ -75,7 +75,6 @@ public class Game {
         this.spawnTerrainForming = SpawnTerrainForming.create(this.survivalGames, this.gameWorld,
                 this.gameSetting.getTerrainFormingSize(), this.survivalGames.getLogger());
         this.pluginScoreBoardManager.runTaskTimerAsynchronously(this.survivalGames, 0L, 10L);
-        this.survivalGames.getCommand("kit").setExecutor(this.kitManager);
     }
 
     public void broadcastMessage(String messageId, String rescueMessage, boolean color, Object... objects) {
