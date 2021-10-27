@@ -85,7 +85,7 @@
     <build>
         <defaultGoal>clean install</defaultGoal>
         <sourceDirectory>src</sourceDirectory>
-        <finalName>${pom.artifactId}</finalName>
+        <finalName>${pom.artifactId}-noShade</finalName>
         <resources>
             <resource>
                 <directory>resource</directory>
@@ -117,7 +117,7 @@
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
-                    <finalName>${pom.name}</finalName>
+                    <finalName>${pom.artifactId}</finalName>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
