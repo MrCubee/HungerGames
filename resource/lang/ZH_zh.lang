@@ -32,7 +32,7 @@ step.feastStep.scoreboard=&6%s&c人宴会
 broadcast.prefix=&6[&cSurvivalGames&6]
 broadcast.starting=&6游戏在&c%s&6秒内开始
 broadcast.restarting=&c%s&6秒后重启服务器
-broadcast.player.death=&c%s(&7%s&c) &6死了 ! 剩余&c%d&6位玩家。
+broadcast.player.death=&c%s (&7%s&c) &6死了 ! 剩余&c%d&6位玩家。
 broadcast.player.lastDeath=&c%s(&7%s&c) &6死了 !
 broadcast.player.win=&c%s &6赢得比赛！
 
@@ -41,3 +41,7 @@ broadcast.player.win=&c%s &6赢得比赛！
 kit.select=&6您拿了&r%s&6工具包。
 kit.spectator.name=观众
 kit.noKit.name=不带套件
+
+################################ CHAT ##############################
+
+chat.spectator.prefix=&7[观众]&r

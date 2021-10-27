@@ -32,7 +32,7 @@ step.feastStep.scoreboard=&cFeast in &6%s
 broadcast.prefix=&6[&cSurvivalGames&6]
 broadcast.starting=The game starts in &c%s second%s
 broadcast.restarting=Restart the server in &c%s second%s
-broadcast.player.death=&c%s(&7%s&c) &6is Dead ! There are &c%d players left.
+broadcast.player.death=&c%s (&7%s&c) &6is Dead ! There are &c%d players left.
 broadcast.player.lastDeath=&c%s(&7%s&c) &6is Dead !
 broadcast.player.win=&c%s &6WIN THE GAME !!!
 
@@ -41,3 +41,7 @@ broadcast.player.win=&c%s &6WIN THE GAME !!!
 kit.select=&6You took the &r%s &6kit.
 kit.spectator.name=Spectator
 kit.noKit.name=No kit
+
+################################ CHAT ##############################
+
+chat.spectator.prefix=&7[Spectator]&r
