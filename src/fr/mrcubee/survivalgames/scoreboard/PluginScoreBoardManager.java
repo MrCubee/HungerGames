@@ -30,7 +30,7 @@ public class PluginScoreBoardManager extends BukkitRunnable {
     }
 
     public CustomSideBar getPlayerSideBar(Player player) {
-        final String scoreBoardDisplayName = ChatColor.GOLD.toString() + ChatColor.BOLD.toString() + "SurvivalGames";
+        final String scoreBoardDisplayName = ChatColor.GOLD.toString() + ChatColor.BOLD.toString() + game.getPlugin().getDescription().getName();
         CustomSideBar objective;
 
         if (player == null)
