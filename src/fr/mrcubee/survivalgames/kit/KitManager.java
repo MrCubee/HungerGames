@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-public class KitManager implements CommandExecutor {
+public class KitManager {
 
     private static BukkitTask bukkitTask;
 
@@ -170,23 +170,6 @@ public class KitManager implements CommandExecutor {
 
     public ItemStack getRadarItem() {
         return this.radarItem.clone();
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Kit[] kits;
-        Player target;
-
-        if (sender.isOp() && args != null && args.length > 1 && args[0].equalsIgnoreCase("view")) {
-            target = Bukkit.getPlayer(args[1]);
-            if (target == null)
-                sender.sendMessage(ChatColor.RED + "Player do not exist !");
-            else {
-                kits = getKitByPlayer(target);
-                sender.sendMessage(ChatColor.GOLD + "Kit: " + ChatColor.RESET + (((kits == null || kits.length < 1) ? "No Kit" : kits[0].getName())));
-            }
-        }
-        return true;
     }
 
     public FastInventory[] getKitInventories() {
