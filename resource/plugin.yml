@@ -4,6 +4,6 @@ author: MrCubee
 main: fr.mrcubee.survivalgames.SurvivalGames
 commands:
   forcestart:
+    permission: minigame.command.forcestart
   kit:
-  spawn:
   lang:

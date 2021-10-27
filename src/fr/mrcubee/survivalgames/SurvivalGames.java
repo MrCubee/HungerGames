@@ -95,8 +95,6 @@ public class SurvivalGames extends JavaPlugin {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (!sender.isOp())
-			return false;
 		if (getGame().getGameStats() == GameStats.WAITING)
 			getGame().forceStart();
 		if (getGame().getGameStats() == GameStats.DURING)
