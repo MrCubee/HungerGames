@@ -146,11 +146,14 @@ public abstract class Kit implements Listener, BiConsumer<Button, HumanEntity> {
         player = (Player) humanEntity;
         kitManager = SurvivalGamesAPI.getGame().getKitManager();
         oldKits = kitManager.getKitByPlayer(player);
+
         if (addPlayer(player)) {
             player.closeInventory();
             if (oldKits != null) {
-                for (Kit kit : oldKits)
-                    kit.removePlayer(player);
+                for (Kit kit : oldKits) {
+                    if (!kit.equals(this))
+                        kit.removePlayer(player);
+                }
             }
             player.sendMessage(Lang.getMessage(player, "kit.select", "&6You took the &r%s &6kit.", true, getDisplayName(player)));
         }
