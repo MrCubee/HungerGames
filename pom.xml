@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.mrcubee.minecraft.plugin</groupId>
-    <artifactId>survivalgames</artifactId>
+    <artifactId>hungergames</artifactId>
     <version>1.2</version>
     <packaging>jar</packaging>
 
-    <name>SurvivalGames</name>
+    <name>HungerGames</name>
     <description>Minecraft survival mini-game</description>
-    <url>https://github.com/ArkadGamesNetwork/SurvivalGames</url>
+    <url>https://github.com/ArkadGamesNetwork/HungerGames</url>
 
     <organization>
         <name>ArkadGames</name>
@@ -35,7 +35,7 @@
 
     <issueManagement>
         <system>github</system>
-        <url>https://github.com/ArkadGamesNetwork/SurvivalGames/issues</url>
+        <url>https://github.com/ArkadGamesNetwork/HungerGames/issues</url>
     </issueManagement>
 
     <repositories>

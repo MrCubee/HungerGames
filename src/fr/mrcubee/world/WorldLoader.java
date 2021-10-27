@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 
-import fr.mrcubee.survivalgames.world.Selection;
+import fr.mrcubee.hungergames.world.Selection;
 
 /**
  * 
