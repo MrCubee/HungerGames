@@ -12,7 +12,7 @@ import fr.mrcubee.survivalgames.SurvivalGames;
 
 public class PlayerPreLogin implements Listener {
 	
-	private SurvivalGames survivalGames;
+	private final SurvivalGames survivalGames;
 	
 	public PlayerPreLogin(SurvivalGames survivalGames) {
 		this.survivalGames = survivalGames;
