@@ -19,6 +19,7 @@ public final class RegisterListeners {
 		pluginManager.registerEvents(new PlayerDropItem(survivalGames), survivalGames);
 		pluginManager.registerEvents(new PlayerInteract(survivalGames), survivalGames);
 		pluginManager.registerEvents(new PlayerJoin(survivalGames), survivalGames);
+		pluginManager.registerEvents(new PlayerLogin(survivalGames), survivalGames);
 		pluginManager.registerEvents(new PlayerMove(survivalGames), survivalGames);
 		pluginManager.registerEvents(new PlayerPickupItem(survivalGames), survivalGames);
 		pluginManager.registerEvents(new PlayerPreLogin(survivalGames), survivalGames);

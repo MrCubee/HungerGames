@@ -3,6 +3,7 @@ package fr.mrcubee.survivalgames.scoreboard;
 import fr.mrcubee.langlib.Lang;
 import fr.mrcubee.survivalgames.Game;
 import fr.mrcubee.survivalgames.kit.Kit;
+import fr.mrcubee.survivalgames.listeners.player.PlayerLogin;
 import fr.mrcubee.survivalgames.step.Step;
 import fr.mrcubee.survivalgames.step.StepUtil;
 import net.arkadgames.survivalgame.sql.PlayerData;
@@ -56,7 +57,7 @@ public final class ScoreboardBuilder {
                     game.getNumberPlayer(), game.getGameSetting().getMinPlayer()));
             return;
         }
-        result.add(Lang.getMessage(player, "scoreboard.players.during", "&fPlayers: &a%d", true, game.getNumberPlayer()));
+        result.add(Lang.getMessage(player, "scoreboard.players.during=&fJoueurs: &a%d", "&fPlayers: &a%d", true, game.getNumberPlayer()));
     }
 
     private static void getPlayerKit(Game game, Player player, List<String> result) {
@@ -79,7 +80,12 @@ public final class ScoreboardBuilder {
     }
 
     private static void getServerIP(Player player, List<String> result) {
-        result.add(Lang.getMessage(player, "scoreboard.serverIp", "&e%s", true, "mc.arkadgames.net"));
+        String hostName;
+
+        if (player == null || (hostName = PlayerLogin.PLAYER_HOSTNAMES.get(player)) == null || hostName.length() > 160) {
+            result.add(Lang.getMessage(player, "scoreboard.serverIp", "&e%s", true, "mc.arkadgames.net"));
+        } else
+            result.add(Lang.getMessage(player, "scoreboard.serverIp", "&e%s", true, hostName));
     }
 
     protected static List<String> build(Game game, Player player, PlayerData playerData) {
