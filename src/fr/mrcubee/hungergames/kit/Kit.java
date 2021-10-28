@@ -48,7 +48,7 @@ public abstract class Kit implements Listener, BiConsumer<Button, HumanEntity> {
     }
 
     public boolean addPlayer(Player player) {
-        if (player == null || !player.isOnline() || !canTakeKit(player))
+        if (player == null || !player.isOnline())
             return false;
         this.players.add(player);
         return true;
@@ -73,6 +73,8 @@ public abstract class Kit implements Listener, BiConsumer<Button, HumanEntity> {
     }
 
     public abstract boolean canTakeKit(Player player);
+
+    public abstract void cantTakeKitReason(Player player);
 
     public abstract void givePlayerKit(Player player);
 
@@ -146,6 +148,10 @@ public abstract class Kit implements Listener, BiConsumer<Button, HumanEntity> {
         kitManager = HungerGamesAPI.getGame().getKitManager();
         oldKits = kitManager.getKitByPlayer(player);
 
+        if (!canTakeKit(player)) {
+            cantTakeKitReason(player);
+            return;
+        }
         if (addPlayer(player)) {
             player.closeInventory();
             if (oldKits != null) {
