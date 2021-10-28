@@ -8,4 +8,6 @@ main: fr.mrcubee.hungergames.HungerGames
 commands:
   forcestart:
     permission: minigame.command.forcestart
+  kit:
+    permission: hg.kit.set
   lang:

@@ -1,6 +1,7 @@
 package fr.mrcubee.hungergames;
 
 import fr.mrcubee.bukkit.packet.GenericListenerManager;
+import fr.mrcubee.hungergames.command.CommandRegister;
 import fr.mrcubee.langlib.Lang;
 import fr.mrcubee.hungergames.command.LangCommand;
 import fr.mrcubee.hungergames.listeners.RegisterListeners;
@@ -51,9 +52,7 @@ public class HungerGames extends JavaPlugin {
 		this.game.init();
 
 		// **Commands** //
-		pluginCommand = getCommand("lang");
-		pluginCommand.setExecutor(langCommand);
-		pluginCommand.setTabCompleter(langCommand);
+		CommandRegister.registerCommand(this);
 
 		// **STEPS** //
 		stepManager = this.game.getStepManager();
