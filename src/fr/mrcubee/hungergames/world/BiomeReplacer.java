@@ -15,7 +15,7 @@ public class BiomeReplacer {
         if ((version = Versions.getCurrent()) == null)
             return false;
         try {
-            clazz = Class.forName("fr.mrcubee.survivalgames.world." + version.toString() + ".CraftBiomeReplacer");
+            clazz = Class.forName("fr.mrcubee.hungergames.world." + version.toString() + ".CraftBiomeReplacer");
             method = clazz.getDeclaredMethod("replace");
             method.setAccessible(true);
             result = (Boolean) method.invoke(null);
