@@ -44,7 +44,7 @@ public class PlayerDeath implements Listener {
         for (int i = 1; i < kits.length; i++) {
             stringBuilder.append(ChatColor.GRAY.toString());
             stringBuilder.append(", ");
-            stringBuilder.append(kits[i].toString());
+            stringBuilder.append(kits[i].getDisplayName(displayPlayer));
         }
         return stringBuilder.toString();
     }
