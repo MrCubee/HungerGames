@@ -33,7 +33,7 @@ broadcast.prefix=&6[&cSurvivalGames&6]
 broadcast.starting=&6游戏在&c%s&6秒内开始
 broadcast.restarting=&c%s&6秒后重启服务器
 broadcast.player.death=&c%s (&7%s&c) &6死了 ! 剩余&c%d&6位玩家。
-broadcast.player.lastDeath=&c%s(&7%s&c) &6死了 !
+broadcast.player.lastDeath=&c%s (&7%s&c) &6死了 !
 broadcast.player.win=&c%s &6赢得比赛！
 
 ################################ Kit ###############################

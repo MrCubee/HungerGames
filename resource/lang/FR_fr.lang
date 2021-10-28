@@ -33,7 +33,7 @@ broadcast.prefix=&6[&cSurvivalGames&6]
 broadcast.starting=&6Le jeu commence dans &c%s seconde%s
 broadcast.restarting=&6Redemarrage du serveur dans &c%s seconde%s
 broadcast.player.death=&c%s (&7%s&c) &6est mort ! &c%d joueurs restants.
-broadcast.player.lastDeath=&c%s(&7%s&c) &6est mort !
+broadcast.player.lastDeath=&c%s (&7%s&c) &6est mort !
 broadcast.player.win=&c%s &6GAGNE LA PARTIE !!!
 
 ################################ Kit ###############################
