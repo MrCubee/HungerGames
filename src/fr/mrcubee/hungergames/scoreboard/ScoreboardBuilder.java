@@ -66,11 +66,19 @@ public final class ScoreboardBuilder {
 
         if (game.isSpectator(player)) {
             kitName = Lang.getMessage(player, "kit.spectator.name","Spectator", true);
-        } else if ((kit = game.getKitManager().getKitByPlayer(player)) == null || kit.length == 0)
+            result.add(Lang.getMessage(player, "scoreboard.kit", "&fKit: &7%s", true, kitName));
+            return;
+        }
+        if ((kit = game.getKitManager().getKitByPlayer(player)) == null || kit.length == 0) {
             kitName = Lang.getMessage(player, "kit.noKit.name", "No kit", true);
-        else
-            kitName = kit[0].getDisplayName(player);
-        result.add(Lang.getMessage(player, "scoreboard.kit", "&fKit: &7%s", true, kitName));
+            result.add(Lang.getMessage(player, "scoreboard.kit", "&fKit: &7%s", true, kitName));
+            return;
+        }
+        if (kit.length < 2) {
+            result.add(Lang.getMessage(player, "scoreboard.kit", "&fKit: &7%s", true, kit[0].getDisplayName(player)));
+            return;
+        }
+        result.add(Lang.getMessage(player, "scoreboard.kit", "&fKit: &7%s", true, kit[(int) ((System.currentTimeMillis() / 2000) % kit.length)].getDisplayName(player)));
     }
 
     private static void getWorldBorder(Game game, Player player, List<String> result) {
