@@ -29,7 +29,7 @@ step.feastStep.scoreboard=&cFeast in &6%s
 
 ############################ Broadcast #############################
 
-broadcast.prefix=&6[&cSurvivalGames&6]
+broadcast.prefix=&6[&cHungerGames&6]
 broadcast.starting=The game starts in &c%s second%s
 broadcast.restarting=Restart the server in &c%s second%s
 broadcast.player.death=&c%s (&7%s&c) &6is Dead ! There are &c%d players left.

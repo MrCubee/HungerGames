@@ -83,7 +83,7 @@ public class Game {
         if (messageId == null || rescueMessage == null)
             return;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            prefix = Lang.getMessage(player, "broadcast.prefix", "&6[&cSurvivalGames&6]", true);
+            prefix = Lang.getMessage(player, "broadcast.prefix", "&6[&cHungerGames&6]", true);
             player.sendMessage(prefix + " " + Lang.getMessage(player, messageId, rescueMessage, color, objects));
         }
     }
